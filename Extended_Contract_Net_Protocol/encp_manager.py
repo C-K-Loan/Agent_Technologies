@@ -9,7 +9,8 @@ Created on Sun Jun  4 23:30:59 2017
 import numpy as np
 import math
 import encp_agent
-class encp_manager():
+
+class Encp_manager():
     
     object_counter = 0
     instances = []
@@ -22,8 +23,8 @@ class encp_manager():
         self.bids = {}# Dictionary for Key:Agent Value:Tuple (BID,ID of agent)
         self.location = location#which field does the ENCP manager manage
         self.phase = 1#inital phase 1 of 2 
-        self.id = encp_manager.id_counter
-        encp_manager.id_counter += 1
+        self.id = Encp_manager.id_counter
+        Encp_manager.id_counter += 1
         self.phase = 1        
     
     def manage(self):
@@ -31,12 +32,15 @@ class encp_manager():
     #inital call of this method, to start manager 
     #once Task is managed, encp_manager instance will terminate through this method, free ressources?
     
-        recv_pre_bids()#collect al inital pre bids
-        send_pre_reject()#send reject to every agent, who is not best_bid[0]
-        send_pre_accept()#send pre accet to agent, who is best_bid[0]            
+        self.recv_pre_bids()#collect al inital pre bids
+        #self.send_pre_reject()#send reject to every agent, who is not best_bid[0]
+        #self.send_pre_accept()#send pre accet to agent, who is best_bid[0]            
 
+
+    #TO TEST
     #edge from 1 to 2, collect all pre bids
     def recv_pre_bids(self):
+        print("Collecting bids...")
         for agent in Agent.instances:#ANNOUNCE TASK/Inform Every Agent and get Pre Bid (1) Task Announcement and (2) Recieving end of Pre Bid
             self.bids[agent] = (agent.getPreBid(location,self), agent.id)#aka Call for proposals(cfp),Use Agent as Key and Bid as Value                
             print("Recieved bid :" + str(bid[agent]) + "from Agent :"+ str(agent.id))
@@ -58,9 +62,9 @@ class encp_manager():
          #   if (ag)
 #        for agent in  encp_agent.Agent.instances
         for agent in self.bids: # iterate over all Agents who gave bids
-            if(self.bids[agent][1])
-            
-        
+            #if(self.bids[agent][1] != self.best_bid[])
+             #   agent.recv_pre_reject()
+             print(agent)
  
         return " TODO"
 
