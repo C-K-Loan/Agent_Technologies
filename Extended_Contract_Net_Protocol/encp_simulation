@@ -27,10 +27,10 @@ def init_world( width, height, agents):
     for i in range (agents):
         Agent(agents[i])
 
-
-             
+            
 class task():
-    
+#represents a task/job, for location and time(whic his announce time)     
+
     object_counter = 0
     instances = []
     id_counter = 0
@@ -45,7 +45,9 @@ class task():
         self.done = False 
         return " TODO" 
 
-        
+
+
+#an initiator, will initiate the encp Manager instance, of A location with announce_task(), when time is right        
 class initiator():
     
     object_counter = 0
@@ -54,7 +56,7 @@ class initiator():
     phase = 1
 
     def __init__(self, task):
-        self.time = time
+        self.time = time#when the task will be released
         self.id = initiator.id_counter
         initiator.id_counter +=1        
         self.task = task
@@ -63,22 +65,35 @@ class initiator():
     #announce Task , Create ENCP instance for that task
     def announce_task(self):
         if self.task.time == time_global: #only Release Task when world is at that time
-            manager = encp_manager(self.task.task_location)#initiate encp instance            
-            manager.manage()# maybe remove this and let everything be handelt in __init__ encp
-            return "kinda implemented on Manage side"
+            manager = manager.encp_manager(self.task.task_location)#initiate encp instance            
+            manager.manage()
+            print(TASK FOR " + str(self.task.task_location)+"initiated!")
         else:
             print("Time for Task has not yet come, expected: " + self.task.time)
         
 def simulate(t, n=0):
     time_global=0
-    print("______________________________________________")
+
     for t in range(t):
-        time_global += 1
+        for initiator in initiator.instances #every time iteration, tasks get announced and if the time is right, Encp manager will be created
+        initiator.announce_task()
+
+    
+    time_global += 1#if time should start at 1, put this at beginning of for loop
+
         #simulate world TODO
         
         
+#bulding agent: 
+#capacity, location, speed, pref
 test_agent= agent.Agent(5,(0,0),15,20)
-print(test_agent.get_distance_to((10,10)))
 
+#building encp manager
 test_manager = manager.encp_manager(1)
+
+
+
+init_world(5,5)
+simulate(10)
+
 #test_manager.recv_pre_bids()
