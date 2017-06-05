@@ -42,8 +42,8 @@ class Task():
         self.time = time
         self.id = task.id_counter
         task.id_counter +=1
-        self.done = False 
-        return " TODO" 
+        self.done = False
+         
 
 
 
@@ -56,15 +56,14 @@ class Initiator():
     phase = 1
 
     def __init__(self, task):
-        self.time = time#when the task will be released
         self.id = Initiator.id_counter
         Initiator.id_counter +=1        
         self.task = task
-        return " TODO"
+        Initiator.instances.append(self)
 
     #announce Task , Create ENCP instance for that task
     def announce_task(self):
-        if self.task.time == time_global: #only Release Task when world is at that time
+        if self.task.time == time_Global: #only Release Task when world is at that time
             manager = manager.encp_manager(self.task.task_location)#initiate encp instance            
             manager.manage()
             print("TASK FOR " + str(self.task.task_location)+"initiated!")
@@ -72,14 +71,14 @@ class Initiator():
             print("Time for Task has not yet come, expected: " + self.task.time)
         
 def simulate(t, n=0):
-    time_global=0
+    global time_Global=0
 #every time iteration, tasks get announced and if the time is right, Encp manager will be created
     for t in range(t):
-        for initiator in Initiator.instances: 
+        for sinitiator in Initiator.instances: 
             initiator.announce_task()   
-
+            
     
-    time_global += 1#if time should start at 1, put this at beginning of for loop
+    time_Global += 1#if time should start at 1, put this at beginning of for loop
 
         #simulate world TODO
         
@@ -88,11 +87,9 @@ def simulate(t, n=0):
 #capacity, location, speed, pref
 test_agent= agent.Agent(5,(0,0),15,20)
 
-#building encp manager
-test_manager = manager.encp_manager(1)
 
-
-initiator = Initiator(task((3,3),0))
+task1= task(3,3)
+initiator = Initiator(task,0)
 
 init_world(5,5)
 simulate(10)
