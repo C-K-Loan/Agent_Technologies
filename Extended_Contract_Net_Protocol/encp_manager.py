@@ -8,6 +8,7 @@ Created on Sun Jun  4 23:30:59 2017
 
 import numpy as np
 import math
+import encp_agent
 class encp_manager():
     
     object_counter = 0
@@ -18,7 +19,7 @@ class encp_manager():
     #@param location, which location will be managed by this manager
     def __init__(self, location):
         best_bid= (math.inf,None ) # best_bid(0) is value of Best bid, best_bid(1) is that corrosponding bidding Agent
-        self.bids = {}# Dictionary for Key:Agent Value:BestBid of Agent
+        self.bids = {}# Dictionary for Key:Agent Value:Tuple (BID,ID of agent)
         self.location = location#which field does the ENCP manager manage
         self.phase = 1#inital phase 1 of 2 
         self.id = encp_manager.id_counter
@@ -37,7 +38,7 @@ class encp_manager():
     #edge from 1 to 2, collect all pre bids
     def recv_pre_bids(self):
         for agent in Agent.instances:#ANNOUNCE TASK/Inform Every Agent and get Pre Bid (1) Task Announcement and (2) Recieving end of Pre Bid
-            self.bids[agent] = agent.getPreBid(location,self)#aka Call for proposals(cfp),Use Agent as Key and Bid as Value                
+            self.bids[agent] = (agent.getPreBid(location,self), agent.id)#aka Call for proposals(cfp),Use Agent as Key and Bid as Value                
             print("Recieved bid :" + str(bid[agent]) + "from Agent :"+ str(agent.id))
         for bid in bids:#find best bidder, send him Pre Accept, Pre Reject to the rest
             if(best_bid[0]> bid[0]):
@@ -51,11 +52,14 @@ class encp_manager():
     
     
     #edge from step 2 to 4 
-    def send_pre_reject(agent):
+    def send_pre_reject(self,agent):
         #iterate over all agents, send Rej to everyone except best_bid[1], which is the ID of best bidder
         #for agent in Agent.instances:
          #   if (ag)
-        
+#        for agent in  encp_agent.Agent.instances
+        for agent in self.bids: # iterate over all Agents who gave bids
+            if(self.bids[agent][1])
+            
         
  
         return " TODO"
