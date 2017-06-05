@@ -15,7 +15,7 @@ class encp_manager():
     id_counter = 0
     
     
-    
+    #@param location, which location will be managed by this manager
     def __init__(self, location):
         best_bid= (math.inf,None ) # best_bid(0) is value of Best bid, best_bid(1) is that corrosponding bidding Agent
         self.bids = {}# Dictionary for Key:Agent Value:BestBid of Agent
@@ -23,7 +23,16 @@ class encp_manager():
         self.phase = 1#inital phase 1 of 2 
         self.id = encp_manager.id_counter
         encp_manager.id_counter += 1
-        
+        self.phase = 1        
+    
+    def manage(self):
+    #function that manages ai/acting of manager
+    #inital call of this method, to start manager 
+    #once Task is managed, encp_manager instance will terminate through this method, free ressources?
+    
+        recv_pre_bids()#collect al inital pre bids
+        send_pre_reject()#send reject to every agent, who is not best_bid[0]
+        send_pre_accept()#send pre accet to agent, who is best_bid[0]            
 
     #edge from 1 to 2, collect all pre bids
     def recv_pre_bids(self):
@@ -35,7 +44,8 @@ class encp_manager():
                 best_bid[0] = bid[0]
                 best_bid[1] = best_bid # the key of the dict is the Agent id!
             else : a = 1#we could already send pre rejects here for optimization, but meh.. do thema all at once later   
-        print("best Bidder is:")
+        print("best Bidder is:"+ best_bid[0])
+       
         ##send pre reject /acc
 
     
