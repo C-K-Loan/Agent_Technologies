@@ -48,9 +48,9 @@ class Encp_manager():
         for bid in self.bids:#find best bidder, send him Pre Accept, Pre Reject to the rest
             if(self.best_bid[0]> bid[0]):
                 self.best_bid[0] = bid[0]
-                self.best_bid[1] = self.best_bid # the key of the dict is the Agent id!
+                self.best_bid[1] = bid[1] # the key of the dict is the Agent id!
             else : a = 1#we could already send pre rejects here for optimization, but meh.. do thema all at once later   
-        print("best Bidder is:"+ best_bid[0])
+        print("best Bidder is:"+ str(self.best_bid[0]))
        
         ##send pre reject /acc
 
