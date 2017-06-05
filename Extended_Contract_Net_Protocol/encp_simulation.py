@@ -28,7 +28,7 @@ def init_world( width, height, agents):
         Agent(agents[i])
 
             
-class task():
+class Task():
 #represents a task/job, for location and time(whic his announce time)     
 
     object_counter = 0
@@ -48,7 +48,7 @@ class task():
 
 
 #an initiator, will initiate the encp Manager instance, of A location with announce_task(), when time is right        
-class initiator():
+class Initiator():
     
     object_counter = 0
     instances = []
@@ -67,16 +67,16 @@ class initiator():
         if self.task.time == time_global: #only Release Task when world is at that time
             manager = manager.encp_manager(self.task.task_location)#initiate encp instance            
             manager.manage()
-            print(TASK FOR " + str(self.task.task_location)+"initiated!")
+            print("TASK FOR " + str(self.task.task_location)+"initiated!")
         else:
             print("Time for Task has not yet come, expected: " + self.task.time)
         
 def simulate(t, n=0):
     time_global=0
-
+#every time iteration, tasks get announced and if the time is right, Encp manager will be created
     for t in range(t):
-        for initiator in initiator.instances #every time iteration, tasks get announced and if the time is right, Encp manager will be created
-        initiator.announce_task()   
+        for initiator in Initiator.instances: 
+            initiator.announce_task()   
 
     
     time_global += 1#if time should start at 1, put this at beginning of for loop
@@ -92,6 +92,7 @@ test_agent= agent.Agent(5,(0,0),15,20)
 test_manager = manager.encp_manager(1)
 
 
+initiator = Initiator(task((3,3),0))
 
 init_world(5,5)
 simulate(10)
