@@ -15,7 +15,6 @@ class Agent():
     id_counter = 0
 
 
-
 #@param location : (x,y)  X height/vertical, Y Horizontal
     def __init__(self, capacity, location, speed, preferences):
         self.capacity = capacity
