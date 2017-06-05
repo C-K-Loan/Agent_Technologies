@@ -57,8 +57,8 @@ class Initiator():
 
     def __init__(self, task):
         self.time = time#when the task will be released
-        self.id = initiator.id_counter
-        initiator.id_counter +=1        
+        self.id = Initiator.id_counter
+        Initiator.id_counter +=1        
         self.task = task
         return " TODO"
 
