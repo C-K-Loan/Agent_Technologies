@@ -8,24 +8,25 @@ Created on Sun Jun  4 23:30:59 2017
 
 import numpy as np
 import math
-import encp_agent
+import encp_agent as agent
 
 class Encp_manager():
-    
-    object_counter = 0
+
     instances = []
     id_counter = 0
     
     
     #@param location, which location will be managed by this manager
     def __init__(self, location):
-        best_bid= (math.inf,None ) # best_bid(0) is value of Best bid, best_bid(1) is that corrosponding bidding Agent
+        self.best_bid = (math.inf,None ) # best_bid(0) is value of Best bid, best_bid(1) is that corrosponding bidding Agent
         self.bids = {}# Dictionary for Key:Agent Value:Tuple (BID,ID of agent)
         self.location = location#which field does the ENCP manager manage
         self.phase = 1#inital phase 1 of 2 
         self.id = Encp_manager.id_counter
+        self.phase = 1
+        Encp_manager.instances.append(self)
         Encp_manager.id_counter += 1
-        self.phase = 1        
+
     
     def manage(self):
     #function that manages ai/acting of manager
@@ -41,13 +42,13 @@ class Encp_manager():
     #edge from 1 to 2, collect all pre bids
     def recv_pre_bids(self):
         print("Collecting bids...")
-        for agent in Agent.instances:#ANNOUNCE TASK/Inform Every Agent and get Pre Bid (1) Task Announcement and (2) Recieving end of Pre Bid
+        for agent in agent.Angent.instances: #ANNOUNCE TASK/Inform Every Agent and get Pre Bid (1) Task Announcement and (2) Recieving end of Pre Bid
             self.bids[agent] = (agent.getPreBid(location,self), agent.id)#aka Call for proposals(cfp),Use Agent as Key and Bid as Value                
-            print("Recieved bid :" + str(bid[agent]) + "from Agent :"+ str(agent.id))
-        for bid in bids:#find best bidder, send him Pre Accept, Pre Reject to the rest
-            if(best_bid[0]> bid[0]):
-                best_bid[0] = bid[0]
-                best_bid[1] = best_bid # the key of the dict is the Agent id!
+            print("Recieved bid :" + str(self.bid[agent]) + "from Agent :"+ str(agent.id))
+        for bid in self.bids:#find best bidder, send him Pre Accept, Pre Reject to the rest
+            if(self.best_bid[0]> bid[0]):
+                self.best_bid[0] = bid[0]
+                self.best_bid[1] = self.best_bid # the key of the dict is the Agent id!
             else : a = 1#we could already send pre rejects here for optimization, but meh.. do thema all at once later   
         print("best Bidder is:"+ best_bid[0])
        

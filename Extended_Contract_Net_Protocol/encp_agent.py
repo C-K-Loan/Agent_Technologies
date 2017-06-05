@@ -43,29 +43,29 @@ class Agent():
 
     ##edge from step 1 to 2,  should be done?
     def send_pre_bid(self,location, manager):
-        bid = get_distance_to(location)
+        bid = self.get_distance_to(location)
                     
         return bid
     
     #edge from step 3 to 5
-    def send_def_bid():
+    def send_def_bid(self):
         return "Todo"
 
     #edge from step 2 to 4
-    def recv_pre_reject():
+    def recv_pre_reject(self):
         return "TODO"
     
     #edge from step 2 to 3
-    def recv_pre_accept():
+    def recv_pre_accept(self):
         return "TODO"
     
     
     #edge from step 5 to 6
-    def recv_def_accept():
+    def recv_def_accept(self):
         return "Todo"
     
     #edge from step 4 to 7
-    def recv_def_reject():
+    def recv_def_reject(self):
         return "TODO"
     
     def get_id(self):
