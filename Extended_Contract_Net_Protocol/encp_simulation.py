@@ -76,7 +76,7 @@ def simulate(t, n=0):
 
     for t in range(t):
         for initiator in initiator.instances #every time iteration, tasks get announced and if the time is right, Encp manager will be created
-        initiator.announce_task()
+        initiator.announce_task()   
 
     
     time_global += 1#if time should start at 1, put this at beginning of for loop
