@@ -10,22 +10,22 @@ import networkx as nx
 import encp_agent as agent
 import encp_manager as manager
 
-width = 5
-height = 5
-global time_Global
+w = 5
+h = 5
+global time_global
 
 
 #@ Param Agents List of Tupels with Agent Parameters 
 #@ Param width, height world size
 #@ aram
-def init_world( width, height, agents):
+def init_world( width = w, height= h):
     global world
     #create gridworld
     world = nx.grid_2d_graph( width, height)
 
     #create Agents from Agents List
-    for i in range (agents):
-        Agent(agents[i])
+    #for i in range (agents):
+     #   Agent(agents[i])
 
             
 class Task():
@@ -40,8 +40,8 @@ class Task():
     def __init__(self, task_location, time):
         self.task_location = task_location
         self.time = time
-        self.id = task.id_counter
-        task.id_counter +=1
+        self.id = Task.id_counter
+        Task.id_counter +=1
         self.done = False
          
 
@@ -63,22 +63,26 @@ class Initiator():
 
     #announce Task , Create ENCP instance for that task
     def announce_task(self):
-        if self.task.time == time_Global: #only Release Task when world is at that time
-            manager = manager.encp_manager(self.task.task_location)#initiate encp instance            
-            manager.manage()
+        if self.task.time == time_global: #only Release Task when world is at that time
+            manager_t = manager.Encp_manager(self.task.task_location)#initiate encp instance            
+            #manager_t.manage()
+            manager_t.recv_def_bids()
+            
             print("TASK FOR " + str(self.task.task_location)+"initiated!")
         else:
-            print("Time for Task has not yet come, expected: " + self.task.time)
-        
+            print("Time for Task has not yet come, expected: " + str(self.task.time))
+         #   print ("World time is " + str(time_global) )
 def simulate(t, n=0):
-    global time_Global=0
+    global time_global
+    time_global = 0
 #every time iteration, tasks get announced and if the time is right, Encp manager will be created
     for t in range(t):
-        for sinitiator in Initiator.instances: 
+        time_global += 1
+        for initiator in Initiator.instances: 
             initiator.announce_task()   
-            
+                
     
-    time_Global += 1#if time should start at 1, put this at beginning of for loop
+    #if time should start at 1, put this at beginning of for loop
 
         #simulate world TODO
         
@@ -88,8 +92,8 @@ def simulate(t, n=0):
 test_agent= agent.Agent(5,(0,0),15,20)
 
 
-task1= task(3,3)
-initiator = Initiator(task,0)
+task1= Task(3,3)
+initiator = Initiator(task1)
 
 init_world(5,5)
 simulate(10)
