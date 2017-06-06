@@ -8,7 +8,7 @@ Created on Sun Jun  4 23:30:59 2017
 
 import numpy as np
 import math
-import encp_agent as agent
+import encp_agent as a
 
 class Encp_manager():
 
@@ -18,9 +18,10 @@ class Encp_manager():
     
     #@param location, which location will be managed by this manager
     def __init__(self, location):
+        print("jep, really initiated")
         self.best_bid = (math.inf,None ) # best_bid(0) is value of Best bid, best_bid(1) is that corrosponding bidding Agent
         self.bids = {}# Dictionary for Key:Agent Value:Tuple (BID,ID of agent)
-        self.location = location#which field does the ENCP manager manage
+        self.x = location#which field does the ENCP manager manage
         self.phase = 1#inital phase 1 of 2 
         self.id = Encp_manager.id_counter
         self.phase = 1
@@ -32,7 +33,6 @@ class Encp_manager():
     #function that manages ai/acting of manager
     #inital call of this method, to start manager 
     #once Task is managed, encp_manager instance will terminate through this method, free ressources?
-    
         self.recv_pre_bids()#collect al inital pre bids
         #self.send_pre_reject()#send reject to every agent, who is not best_bid[0]
         #self.send_pre_accept()#send pre accet to agent, who is best_bid[0]            
@@ -42,14 +42,19 @@ class Encp_manager():
     #edge from 1 to 2, collect all pre bids
     def recv_pre_bids(self):
         print("Collecting bids...")
-        for agent in agent.Angent.instances: #ANNOUNCE TASK/Inform Every Agent and get Pre Bid (1) Task Announcement and (2) Recieving end of Pre Bid
-            self.bids[agent] = (agent.getPreBid(location,self), agent.id)#aka Call for proposals(cfp),Use Agent as Key and Bid as Value                
+        for agent in a.Angent.instances: #ANNOUNCE TASK/Inform Every Agent and get Pre Bid (1) Task Announcement and (2) Recieving end of Pre Bid
+            self.bids[agent] = (agent.send_pre_bid( self.x ,self), agent.id)#aka Call for proposals(cfp),Use Agent as Key and Bid as Value
             print("Recieved bid :" + str(self.bid[agent]) + "from Agent :"+ str(agent.id))
+
         for bid in self.bids:#find best bidder, send him Pre Accept, Pre Reject to the rest
             if(self.best_bid[0]> bid[0]):
                 self.best_bid[0] = bid[0]
                 self.best_bid[1] = bid[1] # the key of the dict is the Agent id!
-            else : a = 1#we could already send pre rejects here for optimization, but meh.. do thema all at once later   
+            else : a = 1#we could already send pre rejects here for optimization, but meh.. do thema all at once later
+            #send pre rejects allready
+            self.send_pre_reject(bid[1])
+        self.send_pre_accept(self.best_bid[1])
+
         print("best Bidder is:"+ str(self.best_bid[0]))
        
         ##send pre reject /acc
@@ -62,11 +67,11 @@ class Encp_manager():
         #for agent in Agent.instances:
          #   if (ag)
 #        for agent in  encp_agent.Agent.instances
-        for agent in self.bids: # iterate over all Agents who gave bids
+        #for agent in self.bids: # iterate over all Agents who gave bids
             #if(self.bids[agent][1] != self.best_bid[])
              #   agent.recv_pre_reject()
-             print(agent)
- 
+             #print(agent)
+
         return " TODO"
 
 
