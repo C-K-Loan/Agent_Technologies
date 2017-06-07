@@ -27,23 +27,21 @@ class Encp_manager():
         self.phase = 1#inital phase 1 of 2 
         self.id = Encp_manager.id_counter
         self.phase = 1
-        self.pre_bid_rounds
+        #self.pre_bid_rounds = 0
         #self.agent_L = agents
         Encp_manager.instances.append(self)
         Encp_manager.id_counter += 1
 
-    def print_smth(self, something):
-        #rint(something)
-        self.recv_pre_bids(self, something)
+
     def manage(self):
     #function that manages ai/acting of manager
     #inital call of this method, to start manager 
     #once Task is managed, encp_manager instance will terminate through this method, free ressources?
-        for rounds in self.pre_bid_rounds#repeat for N pre bidding rounds
-            self.recv_pre_bids()#collect al inital pre bids
-            self.send_pre_rejects()#send reject to every agent, who is not best_bid[0]
-            self.send_pre_accept()#send pre accet to agent, who is best_bid[0]            
-        self.phase=2#def
+   #    for rounds in self.pre_bid_rounds#repeat for N pre bidding rounds
+        self.recv_pre_bids()#collect al inital pre bids
+        self.send_pre_rejects()#send reject to every agent, who is not best_bid[0]
+        self.send_pre_accept()#send pre accet to agent, who is best_bid[0]            
+    # self.phase=2#def
         
 
     #TO TEST
@@ -79,18 +77,20 @@ class Encp_manager():
                 print("sending pre Acc to agent ID : "+ str(agent_it.id) )
                 agent_it.recv_pre_accept(self)
  
-    #Edge from 3 to 5
-    def recv_def_bids(agent):
-        return " todo"
+    
+    
+    
+    #Edge from 3 to 5| @ param agent, agent that sends the def bid
+    def recv_def_bids(self,agent_sender,def_bid):
+        print("Manager recieved def_bid!, Val:"+str(def_bid)+"from agent ID: " + str(agent_sender.id))
+
     
     #edge from 5 to 6 -> END OF protocoll
-    def send_def_accept(agent):
-        return "todo"
-
+    def send_def_accept(self):
+        return "todo"    
     #edge from 5 to 7 -> END of protocoll
-    def send_def_reject(agent):
-        return "todo"
-
+    def send_def_reject(self):
+        return"todo"
 
 #agent.Agent()
 test_agent1= Agent(5,(0,0),15,20, [0])
@@ -100,7 +100,7 @@ test_agent4= Agent(5,(4,4),15,20, [0])
 
 #for agent_x in Agent.instances: print (agent_x)
 agent_list=[test_agent1,test_agent2,test_agent3,test_agent4]
-manager_t= Encp_manager(2,agent_list)
+manager_t= Encp_manager((2,2),agent_list)
 #manager_t.recv_pre_bids()
 manager_t.manage()
 #print(test_agent1.get_distance_to((5,5)))
