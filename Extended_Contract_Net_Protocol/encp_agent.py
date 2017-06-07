@@ -6,8 +6,7 @@ Created on Sun Jun  4 23:29:43 2017
 @author: loan
 """
 
-import encp_manager as manager
-
+#import encp_manager as manager
 
 class Agent():
     instances = []
@@ -28,13 +27,13 @@ class Agent():
     def __init__(self, id, x, k, g, p):
         # def __init__(self, capacity, location, speed, preferences):
         self.id = Agent.id_counter
-        self.x = x
-        self.k = k
-        self.g = g
+        self.location = x
+        self.capacity = k
+        self.speed = g
         # jede Präfrenz kommt einmalig vor
-        self.p = p
+        self.preferences = p
 
-        self.schedule = ""
+        self.schedule = "empty" #implement as dictionary, keys:0,1,2.. values, where 0 is key for job with highest priority  #values are tuples (location,manager), with location = location of job and and manager = manager who gave the job
         Agent.instances.append(self)
         Agent.id_counter += 1
 
@@ -47,14 +46,15 @@ class Agent():
 # calculate using  |x1-x2| + |y1-y2|
 # Schedule berücksichtigen
     def get_distance_to(self, location):
-        dist = abs(self.location[0] - location[0]) + abs(self.location[1] + location[1])
+        dist = self.location[0]# - location[0] #+ abs(self.location[1] - location[1])
+        print("Agent with ID:"+ str(self.id)+"sends bid to:"+"<Manager>"+ " with Bid Value:" + str(dist) + "for Location" + str(location))
         return dist
 
 
 ##edge from step 1 to 2,  should be done?
     def send_pre_bid(self, x, manager):
         bid = self.get_distance_to(x)
-        self.schedule.append(x)
+        #self.schedule.append(x)
 
 
         return bid
@@ -66,7 +66,7 @@ class Agent():
 
 
 # edge from step 2 to 4
-    def recv_pre_reject(self):
+    def recv_pre_reject(self,manager):
 
         return "TODO"
 
