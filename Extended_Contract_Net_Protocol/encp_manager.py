@@ -27,6 +27,7 @@ class Encp_manager():
         self.phase = 1#inital phase 1 of 2 
         self.id = Encp_manager.id_counter
         self.phase = 1
+        self.pre_bid_rounds
         #self.agent_L = agents
         Encp_manager.instances.append(self)
         Encp_manager.id_counter += 1
@@ -38,10 +39,12 @@ class Encp_manager():
     #function that manages ai/acting of manager
     #inital call of this method, to start manager 
     #once Task is managed, encp_manager instance will terminate through this method, free ressources?
-        self.recv_pre_bids()#collect al inital pre bids
-        #self.send_pre_reject()#send reject to every agent, who is not best_bid[0]
-        #self.send_pre_accept()#send pre accet to agent, who is best_bid[0]            
-
+        for rounds in self.pre_bid_rounds#repeat for N pre bidding rounds
+            self.recv_pre_bids()#collect al inital pre bids
+            self.send_pre_rejects()#send reject to every agent, who is not best_bid[0]
+            self.send_pre_accept()#send pre accet to agent, who is best_bid[0]            
+        self.phase=2#def
+        
 
     #TO TEST
     #edge from 1 to 2, collect all pre bids
@@ -56,18 +59,9 @@ class Encp_manager():
                 print (type(self.bids[agent_it][0]))
                 self.best_bid[0] = str(self.bids[agent_it][0])#actual value of the bid
                 self.best_bid[1] = str(self.bids[agent_it][0]) # id of the bidder
-            else : a = 1#we could already send pre rejects here for optimization, but meh.. do thema all at once later
-            #send pre rejects allready
-            #self.send_pre_reject(self.bids[agent_it][0])
-
-        self.send_pre_rejects()
-        self.send_pre_accept()
-        
+            else : a = 1
         print("best Bid is:"+ str(self.best_bid[0] )+"with id :"+str(self.best_bid[1]))
        
-        ##send pre reject /acc
-
-    
     
     #edge from step 2 to 4 
     #Send pre reject to every agent, who is not best bidder
@@ -107,5 +101,6 @@ test_agent4= Agent(5,(4,4),15,20, [0])
 #for agent_x in Agent.instances: print (agent_x)
 agent_list=[test_agent1,test_agent2,test_agent3,test_agent4]
 manager_t= Encp_manager(2,agent_list)
-manager_t.recv_pre_bids()
+#manager_t.recv_pre_bids()
+manager_t.manage()
 #print(test_agent1.get_distance_to((5,5)))
