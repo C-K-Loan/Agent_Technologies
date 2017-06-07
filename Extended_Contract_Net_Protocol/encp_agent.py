@@ -61,9 +61,12 @@ class Agent():
 
 
 # edge from step 3 to 5
-    def send_def_bid(self):
-        return "Todo"
-
+    def send_def_bid(self,manager):
+#        def_bid= get_dstance_to(manager.)
+        def_bid="placeholder"
+        
+        print("Agent ID:"+ str(self.id)+ "sending def bid Value:" + str(def_bid)+ "for Manager loc:" + str(manager.x))
+        manager.recv_def_bids(self,def_bid)
 
 # edge from step 2 to 4
 #TODO re schedeuling 
@@ -75,6 +78,7 @@ class Agent():
 # edge from step 2 to 3
     def recv_pre_accept(self,manager):
         print("Recieved pre acc, i have ID " + str(self.id))
+        self.send_def_bid(manager)
         return "TODO"
 
 
