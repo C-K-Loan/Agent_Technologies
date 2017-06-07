@@ -46,7 +46,6 @@ class Encp_manager():
     #TO TEST
     #edge from 1 to 2, collect all pre bids
     def recv_pre_bids(self):
-        print("selfq")
         print("Collecting bids...")
         for agent_it in Agent.instances: #ANNOUNCE TASK/Inform Every Agent and get Pre Bid (1) Task Announcement and (2) Recieving end of Pre Bid
             self.bids[agent_it] = (agent_it.send_pre_bid( self.x ,self), agent_it.id)#aka Call for proposals(cfp),Use Agent as Key and Bid as Value
@@ -59,9 +58,11 @@ class Encp_manager():
                 self.best_bid[1] = str(self.bids[agent_it][0]) # id of the bidder
             else : a = 1#we could already send pre rejects here for optimization, but meh.. do thema all at once later
             #send pre rejects allready
-            self.send_pre_reject(self.bids[agent_it][0])
-        #self.send_pre_accept(self.best_bid[1])
+            #self.send_pre_reject(self.bids[agent_it][0])
 
+        self.send_pre_rejects()
+        self.send_pre_accept()
+        
         print("best Bid is:"+ str(self.best_bid[0] )+"with id :"+str(self.best_bid[1]))
        
         ##send pre reject /acc
@@ -69,23 +70,20 @@ class Encp_manager():
     
     
     #edge from step 2 to 4 
-    def send_pre_reject(self,agent):
-        #iterate over all agents, send Rej to everyone except best_bid[1], which is the ID of best bidder
-        #for agent in Agent.instances:
-         #   if (ag)
-#        for agent in  encp_agent.Agent.instances
-        #for agent in self.bids: # iterate over all Agents who gave bids
-            #if(self.bids[agent][1] != self.best_bid[])
-             #   agent.recv_pre_reject()
-             #print(agent)
+    #Send pre reject to every agent, who is not best bidder
+    def send_pre_rejects(self):
+        for agent_it in Agent.instances:
+            if(int(agent_it.id) !=int(self.best_bid[1])):
+                print("sending pre reject to agent ID : "+ str(agent_it.id) )
+                agent_it.recv_pre_reject(self)
 
-        return " TODO"
-
-
-    #edge from 2 to 4
-    def send_pre_accept(agent):
-        return "TODO"
-    
+    #edge from 2 to 4 
+    #send pre accept to best bidder
+    def send_pre_accept(self):
+        for agent_it in Agent.instances:
+            if(int(agent_it.id) ==int(self.best_bid[1])):
+                print("sending pre Acc to agent ID : "+ str(agent_it.id) )
+                agent_it.recv_pre_accept(self)
  
     #Edge from 3 to 5
     def recv_def_bids(agent):
