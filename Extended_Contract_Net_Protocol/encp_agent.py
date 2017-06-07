@@ -66,13 +66,15 @@ class Agent():
 
 
 # edge from step 2 to 4
+#TODO re schedeuling 
     def recv_pre_reject(self,manager):
-
+        print("Recieved pre rej, i have ID "+  str(self.id))
         return "TODO"
 
 
 # edge from step 2 to 3
-    def recv_pre_accept(self):
+    def recv_pre_accept(self,manager):
+        print("Recieved pre acc, i have ID " + str(self.id))
         return "TODO"
 
 
