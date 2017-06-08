@@ -36,7 +36,8 @@ class Agent():
         self.schedule = "empty" #implement as dictionary, keys:0,1,2.. values, where 0 is key for job with highest priority  #values are tuples (location,manager), with location = location of job and and manager = manager who gave the job
         Agent.instances.append(self)
         Agent.id_counter += 1
-
+        self.bids_send_to_manager =  {}#key: manager , value: offer
+        
 
     def __str__(self):
         return "Agent ID: " + str(self.id) + "Location: " + str(self.location) + "Capacity:" + str(
@@ -44,40 +45,57 @@ class Agent():
 
 
 # calculate using  |x1-x2| + |y1-y2|
-# Schedule berücksichtigen
+# todo Schedule berücksichtigen
     def get_distance_to(self, location):
-        dist = self.location[0]# - location[0] #+ abs(self.location[1] - location[1])
-        print("Agent with ID:"+ str(self.id)+"sends bid to:"+"<Manager>"+ " with Bid Value:" + str(dist) + "for Location" + str(location))
+        dist = abs(self.location[0] - location[0] )+ abs(self.location[1] - location[1])
         return dist
 
 
-##edge from step 1 to 2,  should be done?
-    def send_pre_bid(self, x, manager):
-        bid = self.get_distance_to(x)
+#redeschedule and try better bid
+    def get_reschedeuled_distance_to(self,location):
+        dist=self.get_distance_to(location)#todo take care of reschedule
+        
+        
+        return dist
+
+
+##edge from step 1 to 2,  shou
+    def send_pre_bid(self,manager):
+        new_pre_bid = self.get_distance_to(manager.x)#ACTUALLY GET RESCHEDUELED DISTANCE
+        if manager  in self.bids_send_to_manager:# if this is the case, we have already send the manager a bid, now we must try to reschedule and send a better one
+            if (new_pre_bid< self.bids_send_to_manager[manager]):#only send the bid, when it was better than the old one
+                print("AG-ID:"+str(self.id)+"sending Imrpoved bid :"+ str(new_pre_bid))
+                self.bids_send_to_manager[manager]=new_pre_bid # key: manager, value is the bid the agent send him            
+                manager.recv_pre_bid(self,new_pre_bid)          
+        else:
+            print("AG-ID:"+str(self.id)+"sending FIRST bid")
+            self.bids_send_to_manager[manager]= new_pre_bid
+            return new_pre_bid  
+
+        print("AG-ID:"+ str(self.id)+ " Cannot send improved bid")
+
         #self.schedule.append(x)
-
-
-        return bid
-
 
 # edge from step 3 to 5
     def send_def_bid(self,manager):
 #        def_bid= get_dstance_to(manager.)
-        def_bid="placeholder"
+        def_bid=self.get_distance_to(manager.x)#TODO TAKE CARE OF SCHEEDULEEs
         
-        print("Agent ID:"+ str(self.id)+ "sending def bid Value:" + str(def_bid)+ "for Manager loc:" + str(manager.x))
-        manager.recv_def_bids(self,def_bid)
+        print("AG-ID:"+ str(self.id)+ "sending def bid Value:" + str(def_bid))
+        manager.recv_def_bid(self,def_bid)
+
 
 # edge from step 2 to 4
 #TODO re schedeuling 
     def recv_pre_reject(self,manager):
-        print("Recieved pre rej, i have ID "+  str(self.id))
-        return "TODO"
+        self.send_pre_bid(manager)#try if we can send a better bid
 
+
+    #called when recieving a pre reject, try to reschedule and send a better bid
 
 # edge from step 2 to 3
     def recv_pre_accept(self,manager):
-        print("Recieved pre acc, i have ID " + str(self.id))
+        print("Agend ID "+  str(self.id)+"Recieved pre Accept")
         self.send_def_bid(manager)
         return "TODO"
 
@@ -92,5 +110,3 @@ class Agent():
         return "TODO"
 
 
-    def get_id(self):
-        return self.id
