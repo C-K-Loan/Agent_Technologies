@@ -100,13 +100,13 @@ class Agent():
         return "TODO"
 
 
-# edge from step 5 to 6
-    def recv_def_accept(self):
-        return "Todo"
+# edge from step 5 to 6 TODO IMPLEMENT Rescheduleuing
+    def recv_def_accept(self,manager):
+        print("Agend ID "+  str(self.id)+"Recieved def Accept")
 
 
-# edge from step 4 to 7
-    def recv_def_reject(self):
-        return "TODO"
+# edge from step 4 to 7 TODO IMPLEMENT RESCHEDEULING
+    def recv_def_reject(self,manager):
+        print("Agend ID "+  str(self.id)+"Recieved Def Rej")
 
 
