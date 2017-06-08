@@ -19,8 +19,6 @@ class Encp_manager():
     #@param agents, a list of all created agents in the world    
     #@param location, which location will be managed by this manager
     def __init__(self, location, agents):
-        print ("HI")
-        print("Agent for Location"+ str(location) + " initiated")
         self.best_bid = [math.inf,None ]#best_bid(0) is value of Best bid, best_bid(1) is that corrosponding bidding Agent
         self.bids = {}# Dictionary for Key:Agent Value:Tuple (BID,ID of agent)
         self.x = location#which field does the ENCP manager manage
@@ -77,22 +75,24 @@ class Encp_manager():
     
     #edge from 1 to 2, collect all pre bids, ask all agents for their bids
     def get_pre_bids(self):
-        print("Collecting bids...")
+        print("M-ID:"+str(self.id)+"Collecting bids...")
         for agent_it in Agent.instances: #ANNOUNCE TASK/Inform Every Agent and get Pre Bid (1) Task Announcement and (2) Recieving end of Pre Bid
             self.bids[agent_it] = (agent_it.send_pre_bid(self), agent_it.id)#aka Call for proposals(cfp),Use Agent as Key and Bid as Value
-            print("Recieved bid :" + str(self.bids[agent_it][0]) + "from Agent ID:"+ str(self.bids[agent_it][1]))
+            print("M-ID:"+str(self.id)+"Recieved bid :" + str(self.bids[agent_it][0]) + "from Agent ID:"+ str(self.bids[agent_it][1]))
             
         for agent_it in Agent.instances:#find best bidder, send him Pre Accept, Pre Reject to the rest
             if(float(self.best_bid[0])> float(self.bids[agent_it][0])):
                 self.best_bid[0] = str(self.bids[agent_it][0])#actual value of the bid
                 self.best_bid[1] = str(self.bids[agent_it][0]) # id of the bidder
             else : 1+1
-        print("best Bid is:"+ str(self.best_bid[0] )+"with id :"+str(self.best_bid[1]))
+        print("M-ID:"+str(self.id)+"best Bid is:"+ str(self.best_bid[0] )+"with id :"+str(self.best_bid[1]))
+        
+        
         
         
     #Inteface for agents, so they can bid, Should only be called by agent, if they can actually offer a better bid
     def recv_pre_bid(self,agent_sender,bid):
-        print("recieved Improved? pre bid from ID:" +str(agent_sender.id)+ "value:" + str(bid)+"old best bid was"+str(self.best_bid[0]))
+        print("M-ID:"+str(self.id)+ "  recv pre bid from ID:" +str(agent_sender.id)+ "value:" + str(bid)+"old best bid was"+str(self.best_bid[0]))
         if(int(self.best_bid[0])< int(bid)):
             self.send_pre_reject_to_best_bidder()
             self.best_bid[0]= bid
@@ -117,7 +117,7 @@ class Encp_manager():
     def send_pre_rejects(self):
         for agent_it in Agent.instances:
             if(int(agent_it.id) !=int(self.best_bid[1])):
-                print("sending pre reject to agent ID : "+ str(agent_it.id) )
+                print("M-ID:"+str(self.id)+"sending pre reject to agent ID : "+ str(agent_it.id) )
                 agent_it.recv_pre_reject(self)
 
     #edge from 2 to 4 
@@ -125,7 +125,7 @@ class Encp_manager():
     def send_pre_accept(self):
         for agent_it in Agent.instances:
             if(int(agent_it.id) ==int(self.best_bid[1])):
-                print("sending pre Acc to agent ID : "+ str(agent_it.id) )
+                print("M-ID:"+str(self.id)+"sending pre Acc to agent ID : "+ str(agent_it.id) )
                 agent_it.recv_pre_accept(self)
  
     
@@ -133,7 +133,7 @@ class Encp_manager():
     
     #Edge from 3 to 5| @ param agent, agent that sends the def bid, this will recieve best_bid and then ask all agents for 
     def recv_def_bid(self,agent_sender,def_bid):
-        print("Manager recieved def_bid!, Val:"+str(def_bid)+"from agent ID: " + str(agent_sender.id))
+        print("M-ID:"+str(self.id)+"recieved def_bid!, Val:"+str(def_bid)+"from agent ID: " + str(agent_sender.id))
         if int(self.best_bid[0])<= def_bid:
             self.best_bid[0] = def_bid
         
@@ -142,14 +142,14 @@ class Encp_manager():
     def send_def_accept(self):
         for agent_it in Agent.instances:
             if(int(agent_it.id) !=int(self.best_bid[1])):
-                print("sending DEF reject to agent ID : "+ str(agent_it.id) )
+                print("M-ID:"+str(self.id)+"sending DEF reject to agent ID : "+ str(agent_it.id) )
                 agent_it.recv_def_reject(self)
 
     #edge from 5 to 7 -> END of protocoll
     def send_def_reject(self):
         for agent_it in Agent.instances:
             if(int(agent_it.id) ==int(self.best_bid[1])):
-                print("sending def Acc to agent ID : "+ str(agent_it.id) )
+                print("M-ID:"+str(self.id)+"sending def Acc to agent ID : "+ str(agent_it.id) )
                 agent_it.recv_def_accept(self)
  
 
