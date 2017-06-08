@@ -95,18 +95,18 @@ class Agent():
 
 # edge from step 2 to 3
     def recv_pre_accept(self,manager):
-        print("Agend ID "+  str(self.id)+"Recieved pre Accept")
+        print("Ag-ID "+  str(self.id)+"Recieved pre Accept")
         self.send_def_bid(manager)
         return "TODO"
 
 
 # edge from step 5 to 6 TODO IMPLEMENT Rescheduleuing
     def recv_def_accept(self,manager):
-        print("Agend ID "+  str(self.id)+"Recieved def Accept")
+        print("Ag-ID "+  str(self.id)+"Recieved def Accept")
 
 
 # edge from step 4 to 7 TODO IMPLEMENT RESCHEDEULING
     def recv_def_reject(self,manager):
-        print("Agend ID "+  str(self.id)+"Recieved Def Rej")
+        print("Ag-ID "+  str(self.id)+"Recieved Def Rej")
 
 
