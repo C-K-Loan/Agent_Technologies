@@ -39,8 +39,14 @@ class Encp_manager():
     #once Task is managed, encp_manager instance will terminate through this method, free ressources?
    #    for rounds in self.pre_bid_rounds#repeat for N pre bidding rounds
         self.get_pre_bids()#collect al inital pre bids
+        print("______________DONE WITH FIRST COLLECTION OF BIDS______")
+
         self.send_pre_rejects()#send reject to every agent, who is not best_bid[0]
-        self.send_pre_accept()#send pre accet to agent, who is best_bid[0]            
+        print("______________DONE WITH SENDING FIRST WAVE OF PRE REJECTS______")
+
+        self.send_pre_accept()#send pre accet to agent, who is best_bid[0]    
+        print("______________DONE WITH FIRST PRE ACCEPT______")
+        
     # self.phase=2#def
         
 
@@ -50,22 +56,20 @@ class Encp_manager():
     def get_pre_bids(self):
         print("Collecting bids...")
         for agent_it in Agent.instances: #ANNOUNCE TASK/Inform Every Agent and get Pre Bid (1) Task Announcement and (2) Recieving end of Pre Bid
-            self.bids[agent_it] = (agent_it.send_pre_bid( self.x ,self), agent_it.id)#aka Call for proposals(cfp),Use Agent as Key and Bid as Value
+            self.bids[agent_it] = (agent_it.send_pre_bid(self), agent_it.id)#aka Call for proposals(cfp),Use Agent as Key and Bid as Value
             print("Recieved bid :" + str(self.bids[agent_it][0]) + "from Agent ID:"+ str(self.bids[agent_it][1]))
             
         for agent_it in Agent.instances:#find best bidder, send him Pre Accept, Pre Reject to the rest
             if(float(self.best_bid[0])> float(self.bids[agent_it][0])):
-                print (type(self.bids[agent_it][0]))
                 self.best_bid[0] = str(self.bids[agent_it][0])#actual value of the bid
                 self.best_bid[1] = str(self.bids[agent_it][0]) # id of the bidder
-            else : a = 1
+            else : 1+1
         print("best Bid is:"+ str(self.best_bid[0] )+"with id :"+str(self.best_bid[1]))
-       
         
         
     #Inteface for agents, so they can bid
     #Should only be called by agent, if they can actually offer a better bid
-    def recv_pre_bids(self,agent_sender,bid):
+    def recv_pre_bid(self,agent_sender,bid):
         print("recieved Improved? pre bid from ID:" +str(agent_sender.id)+ "value:" + str(bid)+"old best bid was"+str(self.best_bid[0]))
         if(int(self.best_bid[0])< int(bid)):
             self.send_pre_reject_to_best_bidder()
@@ -73,6 +77,8 @@ class Encp_manager():
             self.best_bid[1]= agent_sender.id
             print("New best bidder, sending pre Accept to him and pre rej to old best bidder")
             agent_sender.recv_pre_accept(self)
+        else:
+            agent_sender.recv_def_reject()
             
 
 
