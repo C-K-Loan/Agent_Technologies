@@ -39,22 +39,22 @@ class Encp_manager():
     #once Task is managed, encp_manager instance will terminate through this method, free ressources?
    #    for rounds in self.pre_bid_rounds#repeat for N pre bidding rounds
         self.get_pre_bids()#collect al inital pre bids
-        print("P1_____________DONE WITH FIRST COLLECTION OF BIDS______")
+        print("M-"+str(self.id)+"P1_____________DONE WITH FIRST COLLECTION OF BIDS______")
         
         self.send_pre_accept()#send pre accet to agent, who is best_bid[0]    
-        print("P1_____________DONE WITH FIRST PRE ACCEPT________________________")#if best_bider changed, go to beginning of p1.2
+        print("M-"+str(self.id)+"P1_____________DONE WITH FIRST PRE ACCEPT________________________")#if best_bider changed, go to beginning of p1.2
 
         self.send_pre_rejects()#send reject to every agent, who is not best_bid[0], they will answer withnwe bids, if bid is not better than best_bid[0]-> send defenitive bid()
-        print("P1.3_____________DONE WITH SENDING FIRST WAVE OF PRE REJECTS______")
+        print("M-"+str(self.id)+"P1.3_____________DONE WITH SENDING FIRST WAVE OF PRE REJECTS______")
 
         if self.best_bid_changed == True :
-           reset_phase1()
+           self.reset_phase1()
         else: 1+1
         print("P2 _____NOBODY IMPROVED, STARTING PHASE 2____________")
         self.send_def_reject()
-        print("_____DONE WITH SENDING DEF REJECTS_____")
+        print("M-"+str(self.id)+"_____DONE WITH SENDING DEF REJECTS!_____")
         self.send_def_accept()
-        print("_____DONE WITH SENDING DEF ACC_____")
+        print("M-"+str(self.id)+"_____DONE WITH SENDING DEF ACCEPTS!_____")
         
 
 
@@ -152,14 +152,15 @@ class Encp_manager():
                 print("M-ID:"+str(self.id)+"sending def Acc to agent ID : "+ str(agent_it.id) )
                 agent_it.recv_def_accept(self)
  
-
+"""
 test_agent1= Agent(5,(0,0),15,20, [0])
 test_agent2= Agent(5,(3,3),15,20, [0])
 test_agent3= Agent(5,(1,1),15,20, [0])
 test_agent4= Agent(5,(4,4),15,20, [0])
 
 agent_list=[test_agent1,test_agent2,test_agent3,test_agent4]
-manager_t= Encp_manager((2,2),agent_list)
+manager_t= Encp_manager((5,5),agent_list)
 #manager_t.recv_pre_bids()
 manager_t.manage()
 #print(test_agent1.get_distance_to((5,5)))
+"""
