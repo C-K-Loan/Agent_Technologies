@@ -67,16 +67,15 @@ class Initiator():
     #announce Task , Create ENCP instance for that task
     def announce_task(self):
         if self.task.t == time_global: #only Release Task when world is at that time
-            manager_t = manager.Encp_manager(self.task.x)#initiate encp instance
-            
-
-           # manager_t.print_smth("smth")
-            manager_t.manage(manager_t)
-
-            
+         
             print("TASK FOR " + str(self.task.x)+"initiated!")
+            manager_t = Encp_manager(self.task.x,agent_list)
+            print ("IN SIMULATION")
+            manager_t.manage()
+            print(" OUT MANAGE")
+
         else:
-            print("Time for Task has not yet come, expected: " + str(self.task.t))
+            print("Time for Task has not yet come, expected: " + str(self.task.t)+ "time is" + str (time_global))
          #   print ("World time is " + str(time_global) )
 
 
@@ -95,26 +94,28 @@ def simulate(t, n=0):
 #id, location, capacity ,speed, preferences[]
 
 
-test_agent1= Agent(5,(0,0),15,20, [0])
-test_agent2= Agent(5,(3,3),15,20, [0])
-test_agent3= Agent(5,(1,1),15,20, [0])
-test_agent4= Agent(5,(4,4),15,20, [0])
+test_agent0= Agent(5,(0,0),15,20, [0])
+#test_agent1= Agent(5,(3,3),15,20, [0])
+test_agent2= Agent(5,(10,10),15,20, [0])
+#test_agent4= Agent(5,(6,6),15,20, [0])
 
-agent_list=[test_agent1,test_agent2,test_agent3,test_agent4]
+agent_list=[test_agent0,test_agent2]
 print ("PRE MANAGER CONSTRUCT")
-manager_t= Encp_manager((5,5),agent_list)
-
-print ("IN SIMULATION")
-manager_t.manage()
-print(" OUT MANAGE")
+#manager_t= Encp_manager((5,5),agent_list)
 
 
 
-#task1= Task(3,3)
+
+task1= Task(5,(0,4))#should be won my agent 1
+
+task2= Task(5,(3,0))#should be won by agent 2 
+#task3= Task(4,(7,7))#should be won by ag3
 #test_agent= agent.Agent(5,(0,0),15,20, [0])
-#initiator = Initiator(task1)
+initiator1 = Initiator(task1)
+initiator2 = Initiator(task2)
+#initiator3 = Initiator(task3)
 
 #init_world(5,5)
-#simulate(10)
+simulate(10)
 
 #test_manager.recv_pre_bids()
