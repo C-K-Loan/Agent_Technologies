@@ -107,6 +107,9 @@ manager_t= Encp_manager((5,5),agent_list)
 print ("IN SIMULATION")
 manager_t.manage()
 print(" OUT MANAGE")
+
+
+
 #task1= Task(3,3)
 #test_agent= agent.Agent(5,(0,0),15,20, [0])
 #initiator = Initiator(task1)
