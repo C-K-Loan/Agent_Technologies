@@ -8,6 +8,9 @@ import numpy as np
 import math
 import networkx as nx
 import encp_agent as agent
+from encp_agent import Agent
+from encp_manager import Encp_manager
+
 import encp_manager as manager
 
 w = 5
@@ -65,7 +68,10 @@ class Initiator():
     def announce_task(self):
         if self.task.t == time_global: #only Release Task when world is at that time
             manager_t = manager.Encp_manager(self.task.x)#initiate encp instance
-            manager_t.manage()
+            
+
+           # manager_t.print_smth("smth")
+            manager_t.manage(manager_t)
 
             
             print("TASK FOR " + str(self.task.x)+"initiated!")
@@ -89,11 +95,23 @@ def simulate(t, n=0):
 #id, location, capacity ,speed, preferences[]
 
 
-task1= Task(3,3)
-test_agent= agent.Agent(5,(0,0),15,20, [0])
-initiator = Initiator(task1)
+test_agent1= Agent(5,(0,0),15,20, [0])
+test_agent2= Agent(5,(3,3),15,20, [0])
+test_agent3= Agent(5,(1,1),15,20, [0])
+test_agent4= Agent(5,(4,4),15,20, [0])
 
-init_world(5,5)
-simulate(10)
+agent_list=[test_agent1,test_agent2,test_agent3,test_agent4]
+print ("PRE MANAGER CONSTRUCT")
+manager_t= Encp_manager((5,5),agent_list)
+
+print ("IN SIMULATION")
+manager_t.manage()
+print(" OUT MANAGE")
+#task1= Task(3,3)
+#test_agent= agent.Agent(5,(0,0),15,20, [0])
+#initiator = Initiator(task1)
+
+#init_world(5,5)
+#simulate(10)
 
 #test_manager.recv_pre_bids()
