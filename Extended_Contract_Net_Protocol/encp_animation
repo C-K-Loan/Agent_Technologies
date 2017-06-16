@@ -3,6 +3,8 @@ import encp_agent as agent
 from encp_agent import Agent
 import encp_manager as manager
 from encp_manager import Encp_manager
+import tkinter as tk
+
 
 #for agent in Agent.instances:
 
@@ -27,14 +29,26 @@ class SimpleTable(tk.Frame):
         current_row = []
         label = tk.Label(self,text="Iteration",borderwidth=10, width=25)
         label.grid(row=0, column=0, sticky="nsew", padx=1, pady=1)
-        #generate heading
         current_row.append(label)
+
+        #GEN MORE HEADING
         for agent in Agent.instances:
             label = tk.Label(self,text="AGENT ID: " + str(agent.id),borderwidth=10, width=25)
             label.grid(row=0, column=agent.id+1, sticky="nsew", padx=1, pady=1)
             current_row.append(label)
         
         self._widgets.append(current_row)
+
+
+#gen more heading
+
+        current_row = []
+        label = tk.Label(self,text="ENCP MANAGER ID: "+str("MANAGERID??"),borderwidth=10, width=25)
+        label.grid(row=0, column=agent.id+2, sticky="nsew", padx=1, pady=1)
+        current_row.append(label)
+        self._widgets.append(current_row)
+
+
 
 
         current_row = []
@@ -44,7 +58,7 @@ class SimpleTable(tk.Frame):
         #fill rows >0 with bid values and reaction of encp manager
         i=0
         for manager_it in Encp_manager.instances:
-            
+            #iteration num
             label_it_num = tk.Label(self,text="#"+ str(i),borderwidth=10, width=25)
             label_it_num.grid(row=1, column=0, sticky="nsew", padx=1, pady=1)
             current_row.append(label)
@@ -62,6 +76,15 @@ class SimpleTable(tk.Frame):
         widget = self._widgets[row][column]
         widget.configure(text=value)
 
+#generate one row, except encp reacitons
+#generate all the bids
+    def render_bids(self,manager_to_render):
+        current_row = []
+        for agent_it in Agent.instances:
+            label = tk.Label(self,text="Pre Bid: "+ str(manager_to_render.bids[agent][0]),borderwidth=10, width=25)
+            label.grid(row=1, column=agent.id+1, sticky="nsew", padx=1, pady=1)
+            current_row.append(label)
+        self._widgets.append(current_row)
 
 """            
         for row in range(rows):
