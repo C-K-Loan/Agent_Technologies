@@ -14,7 +14,6 @@ class ExampleApp(tk.Tk):
         agent_count = Agent.id_counter
         t = SimpleTable(self, 10,agent_count+2)#
         t.pack(side="top", fill="x")
-        t.set(0,0,"ITeration No")
 #
 class SimpleTable(tk.Frame):
     def __init__(self, parent, rows=10, columns=2):
@@ -22,11 +21,54 @@ class SimpleTable(tk.Frame):
         # form grid lines
         tk.Frame.__init__(self, parent, background="black")
         self._widgets = []
+        
+        
+        #generate heading
+        current_row = []
+        label = tk.Label(self,text="Iteration",borderwidth=10, width=25)
+        label.grid(row=0, column=0, sticky="nsew", padx=1, pady=1)
+        #generate heading
+        current_row.append(label)
+        for agent in Agent.instances:
+            label = tk.Label(self,text="AGENT ID: " + str(agent.id),borderwidth=10, width=25)
+            label.grid(row=0, column=agent.id+1, sticky="nsew", padx=1, pady=1)
+            current_row.append(label)
+        
+        self._widgets.append(current_row)
+
+
+        current_row = []
+
+
+            # Dictionary for Key:Agent Value:Tuple (BID,ID of agent)
+        #fill rows >0 with bid values and reaction of encp manager
+        i=0
+        for manager_it in Encp_manager.instances:
+            
+            label_it_num = tk.Label(self,text="#"+ str(i),borderwidth=10, width=25)
+            label_it_num.grid(row=1, column=0, sticky="nsew", padx=1, pady=1)
+            current_row.append(label)
+
+            for agent in Agent.instances:
+                print(str(manager_it.bids[agent]))
+                label = tk.Label(self,text="Pre Bid: "+ str(manager_it.bids[agent][0]),borderwidth=10, width=25)
+                label.grid(row=1, column=agent.id+1, sticky="nsew", padx=1, pady=1)
+                current_row.append(label)
+
+
+        self._widgets.append(current_row)
+
+    def set(self, row, column, value):
+        widget = self._widgets[row][column]
+        widget.configure(text=value)
+
+
+"""            
         for row in range(rows):
+            i=i+1
             current_row = []
             for column in range(columns):
-                label = tk.Label(self, text="%s/%s" % (row, column), 
-                                 borderwidth=0, width=10)
+                label = tk.Label(self, text="hello"+str(i),borderwidth=0, width=10)
                 label.grid(row=row, column=column, sticky="nsew", padx=1, pady=1)
                 current_row.append(label)
             self._widgets.append(current_row)
@@ -34,12 +76,7 @@ class SimpleTable(tk.Frame):
         for column in range(columns):
             self.grid_columnconfigure(column, weight=1)
 
-
-
-
-    def set(self, row, column, value):
-        widget = self._widgets[row][column]
-        widget.configure(text=value)
+"""
 
 
 init_world(h,w)
