@@ -24,7 +24,17 @@ class SimpleTable(tk.Frame):
         tk.Frame.__init__(self, parent, background="black")
         self._widgets = []
         
+        self.render_head()
+        self.render_bids()
+        #TODO self.render_manager_decision
         
+    def set(self, row, column, value):
+        widget = self._widgets[row][column]
+        widget.configure(text=value)
+
+
+#generate head row
+    def render_head(self):
         #generate heading
         current_row = []
         label = tk.Label(self,text="Iteration",borderwidth=10, width=25)
@@ -38,30 +48,26 @@ class SimpleTable(tk.Frame):
             current_row.append(label)
         
         self._widgets.append(current_row)
-
-
-#gen more heading
-        
         current_row = []
         label = tk.Label(self,text="ENCP MANAGER ID: "+str("MANAGERID??"),borderwidth=10, width=25)
         label.grid(row=0, column=Agent.id_counter+2, sticky="nsew", padx=1, pady=1)
         current_row.append(label)
         self._widgets.append(current_row)
+        
 
+#generate one row, except encp reacitons
+#generate all the bids
+    def render_bids(self):
 
-
-
-        current_row = []
-
-
-            # Dictionary for Key:Agent Value:Tuple (BID,ID of agent)
+        # Dictionary for Key:Agent Value:Tuple (BID,ID of agent)
         #fill rows >0 with bid values and reaction of encp manager
         i=0
+        current_row = []
         for manager_it in Encp_manager.instances:
             #iteration num
             label_it_num = tk.Label(self,text="#"+ str(i),borderwidth=10, width=25)
             label_it_num.grid(row=1, column=0, sticky="nsew", padx=1, pady=1)
-            current_row.append(label)
+            current_row.append(label_it_num)
 
             for agent_it in Agent.instances:
                 print(str(manager_it.bids[agent_it]))
@@ -72,34 +78,10 @@ class SimpleTable(tk.Frame):
 
         self._widgets.append(current_row)
 
-    def set(self, row, column, value):
-        widget = self._widgets[row][column]
-        widget.configure(text=value)
-
-#generate one row, except encp reacitons
-#generate all the bids
-    def render_bids(self,manager_to_render):
-        current_row = []
-        for agent_it in Agent.instances:
-            label = tk.Label(self,text="Pre Bid: "+ str(manager_to_render.bids[agent][0]),borderwidth=10, width=25)
-            label.grid(row=1, column=agent.id+1, sticky="nsew", padx=1, pady=1)
-            current_row.append(label)
-        self._widgets.append(current_row)
-
-"""            
-        for row in range(rows):
-            i=i+1
-            current_row = []
-            for column in range(columns):
-                label = tk.Label(self, text="hello"+str(i),borderwidth=0, width=10)
-                label.grid(row=row, column=column, sticky="nsew", padx=1, pady=1)
-                current_row.append(label)
-            self._widgets.append(current_row)
-
-        for column in range(columns):
-            self.grid_columnconfigure(column, weight=1)
-
-"""
+    
+    def render_manager_decision(self):
+        #TODO
+        x=1
 
 
 init_world(h,w)
