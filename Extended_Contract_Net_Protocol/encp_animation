@@ -4,7 +4,7 @@ from encp_agent import Agent
 import encp_manager as manager
 from encp_manager import Encp_manager
 import tkinter as tk
-
+from encp_simulation import init_world
 
 #for agent in Agent.instances:
 
@@ -32,19 +32,19 @@ class SimpleTable(tk.Frame):
         current_row.append(label)
 
         #GEN MORE HEADING
-        for agent in Agent.instances:
-            label = tk.Label(self,text="AGENT ID: " + str(agent.id),borderwidth=10, width=25)
-            label.grid(row=0, column=agent.id+1, sticky="nsew", padx=1, pady=1)
+        for agent_it in Agent.instances:
+            label = tk.Label(self,text="AGENT ID: " + str(agent_it.id),borderwidth=10, width=25)
+            label.grid(row=0, column=agent_it.id+1, sticky="nsew", padx=1, pady=1)
             current_row.append(label)
         
         self._widgets.append(current_row)
 
 
 #gen more heading
-
+        
         current_row = []
         label = tk.Label(self,text="ENCP MANAGER ID: "+str("MANAGERID??"),borderwidth=10, width=25)
-        label.grid(row=0, column=agent.id+2, sticky="nsew", padx=1, pady=1)
+        label.grid(row=0, column=Agent.id_counter+2, sticky="nsew", padx=1, pady=1)
         current_row.append(label)
         self._widgets.append(current_row)
 
@@ -63,10 +63,10 @@ class SimpleTable(tk.Frame):
             label_it_num.grid(row=1, column=0, sticky="nsew", padx=1, pady=1)
             current_row.append(label)
 
-            for agent in Agent.instances:
-                print(str(manager_it.bids[agent]))
-                label = tk.Label(self,text="Pre Bid: "+ str(manager_it.bids[agent][0]),borderwidth=10, width=25)
-                label.grid(row=1, column=agent.id+1, sticky="nsew", padx=1, pady=1)
+            for agent_it in Agent.instances:
+                print(str(manager_it.bids[agent_it]))
+                label = tk.Label(self,text="Pre Bid: "+ str(manager_it.bids[agent_it][0]),borderwidth=10, width=25)
+                label.grid(row=1, column=agent_it.id+1, sticky="nsew", padx=1, pady=1)
                 current_row.append(label)
 
 
@@ -104,8 +104,6 @@ class SimpleTable(tk.Frame):
 
 init_world(h,w)
 agent_count = Agent.id_counter
-print("ID COUNTER IS "+ str(agent_count))
+#print("ID COUNTER IS "+ str(agent_count))
 app = ExampleApp()
 app.mainloop()
-           
-       
