@@ -25,6 +25,7 @@ class Encp_manager():
         self.phase = 1#inital phase 1 of 2 
         self.id = Encp_manager.id_counter
         self.phase = 1
+        self.finished = False
         #self.pre_bid_rounds = 0
         #self.agent_L = agents
         Encp_manager.instances.append(self)
@@ -42,7 +43,7 @@ class Encp_manager():
         self.get_pre_bids()#collect al inital pre bids
         print("M-"+str(self.id)+"P1_____________DONE WITH FIRST COLLECTION OF BIDS______")
         
-        self.send_pre_accept()#send pre accet to agent, who is best_bid[0]    
+        self.send_pre_accepts()#send pre accet to agent, who is best_bid[0]    
         print("M-"+str(self.id)+"P1_____________DONE WITH FIRST PRE ACCEPT________________________")#if best_bider changed, go to beginning of p1.2
 
         self.send_pre_rejects()#send reject to every agent, who is not best_bid[0], they will answer withnwe bids, if bid is not better than best_bid[0]-> send defenitive bid()
@@ -59,13 +60,17 @@ class Encp_manager():
         
 
 
-
+    def set_phase(self):
+        if self.best_bid_changed == True:
+            self.phase = 1
+        else :
+            self.phase = 2
     
         
     #todo, not really implemented
     def reset_phase1(self):
         print("________RESETTING PHASE 1_________")
-        self.send_pre_accept()#send pre accet to agent, who is best_bid[0]    
+        self.send_pre_accepts()#send pre accet to agent, who is best_bid[0]    
         print("P1_____________DONE WITH FIRST PRE ACCEPT________________________")#if best_bider changed, go to beginning of p1.2
 
         self.send_pre_rejects()#send reject to every agent, who is not best_bid[0], they will answer withnwe bids, if bid is not better than best_bid[0]-> send defenitive bid()
@@ -75,6 +80,7 @@ class Encp_manager():
         #PASTE REST OF MANAGE FUNCTION IN RESET
     
     #edge from 1 to 2, collect all pre bids, ask all agents for their bids
+    #set bestbidder with function call
     def get_pre_bids(self):
         print("M-ID:"+str(self.id)+"Collecting bids...")
         for agent_it in Agent.instances: #ANNOUNCE TASK/Inform Every Agent and get Pre Bid (1) Task Announcement and (2) Recieving end of Pre Bid
@@ -126,7 +132,7 @@ class Encp_manager():
 
     #edge from 2 to 4 
     #send pre accept to best bidder
-    def send_pre_accept(self):
+    def send_pre_accepts(self):
         for agent_it in Agent.instances:
             if(int(agent_it.id) ==int(self.best_bid[1])):
                 print("M-ID: "+str(self.id)+"sending pre Acc to agent ID : "+ str(agent_it.id) )
@@ -142,12 +148,13 @@ class Encp_manager():
             self.best_bid[0] = def_bid
         
     
-    #edge from 5 to 6 -> END OF protocoll
+    #edge from 5 to 6 -> END OF protocoll, manager stops managing after this
     def send_def_accept(self):
         for agent_it in Agent.instances:
             if(int(agent_it.id) !=int(self.best_bid[1])):
                 print("M-ID: "+str(self.id)+"sending DEF reject to agent ID : "+ str(agent_it.id) )
                 agent_it.recv_def_reject(self)
+        self.finished= True# this agent will stop working
 
     #edge from 5 to 7 -> END of protocoll
     def send_def_reject(self):
