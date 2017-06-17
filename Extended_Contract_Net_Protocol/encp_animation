@@ -16,7 +16,7 @@ class ExampleApp(tk.Tk):
         agent_count = Agent.id_counter
         t = SimpleTable(self, 10,agent_count+2)#
         t.pack(side="top", fill="x")
-#
+#   
 class SimpleTable(tk.Frame):
     def __init__(self, parent, rows=10, columns=2):
         # use black background so it "peeks through" to 
