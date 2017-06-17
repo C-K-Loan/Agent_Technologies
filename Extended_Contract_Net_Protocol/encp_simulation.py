@@ -82,18 +82,25 @@ class Initiator():
 def simulate(t,manager_release_time_list):
     global time_global
     time_global = 0
+    i = 0
     #every time iteration, tasks get announced and if the time is right, Encp manager will be created
     for time in range(t):
+        i = 0
         if (manager_release_time_list[time]!= []):# if list is not empty at position, then there are managers to simulate
             while(confirm_no_more_managers_to_simulate(time) == False):#Only simulate, if managers for that time are unfinished
-                
+                   
+                print(">>>>>>>>>>>>ITERATION : "+ str(i) + "FOR TIME "+ str(time)+"<<<<<<<<<<<<<")
                 #Phase 1STEP 2 collect Pre Bids
+                print(">>>>>>>>>>>>COLLECTING PRE BIDS STEP 2<<<<<<<<<<<<<")     
                 for manager_sim in manager_release_time_list[time]:#simulate evermanger for time 
+                    print(">>>>>>>>>>>MANAGER ID :"+ str(manager_sim.id)+"TURN<<<<<<<<<<")
                     if manager_sim.finished == False and manager_sim.phase == 1: # ALPHA IF
                         manager_sim.get_pre_bids()
                 
+                print(">>>>>>>>>>>>SENDING PRE REJECTS AND ACCEPTS<<<<<<<<<<<<<")
                 #Phase1#STEP 3 And 4 Evaluate Pre Bids and send Responses to Agents, Agents will react with DEF bids
                 for manager_sim in manager_release_time_list[time]:#simulate evermanger for time 
+                    print(">>>>>>>>>>>MANAGER ID :"+ str(manager_sim.id)+"TURN<<<<<<<<<<")
                     if manager_sim.finished == False and manager_sim.phase == 1: # ALPHA IF
                         manager_sim.find_and_set_best_bidder()                        
                         manager_sim.send_pre_accepts()#after this, def bid is send automatically
@@ -102,19 +109,22 @@ def simulate(t,manager_release_time_list):
 
                 #wait 1 s for agents to answer 
 
+                print(">>>>>>>>>>>>SETTING PHASES<<<<<<<<<<<<<")
                 #update phase status, check if there is a neew best bidder, if yes -> phase 1, if best bidder didint change ->phase 2 (sending DEF Rej/Acc)
                 for manager_sim in manager_release_time_list[time]:
+                    print(">>>>>>>>>>>MANAGER ID :"+ str(manager_sim.id)+"TURN<<<<<<<<<<")
                     if manager_sim.finished == False:
                         manager_sim.set_phase()
                 
-                    
+
+                print(">>>>>>>>>>>>SENDING DEF ACCEPTS AND REJECTS<<<<<<<<<<<<<")                    
                 #Phase 2 STEP 3 Agents havesend Def bids by now, if best_bidder didint changed manager sends def Accepts and Def Rejects 
                 for manager_sim in manager_release_time_list[time]:#simulate evermanger for time 
+                    print(">>>>>>>>>>>MANAGER ID :"+ str(manager_sim.id)+"TURN<<<<<<<<<<")
                     if manager_sim.finished == False and manager_sim.phase == 2: # ALPHA IF
                         manager_sim.send_def_reject()
                         manager_sim.send_def_accept()
-
-                
+                i+=1 
                     
         
         
@@ -141,9 +151,9 @@ def confirm_no_more_managers_to_simulate(time):
 #id, location, capacity ,speed, preferences[]
 
 
-test_agent0= Agent(5,(0,0),15,20, [0])
+test_agent0= Agent((0,4),5,1,1)
 #test_agent1= Agent(5,(3,3),15,20, [0])
-test_agent2= Agent(5,(6,6),15,20, [0])
+test_agent2= Agent((0,4),5,1,1)
 #test_agent4= Agent(5,(6,6),15,20, [0])
 
 agent_list=[test_agent0,test_agent2]
