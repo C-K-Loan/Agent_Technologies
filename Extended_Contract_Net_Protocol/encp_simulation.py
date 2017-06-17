@@ -13,9 +13,9 @@ from encp_manager import Encp_manager
 
 import encp_manager as manager
 
-w = 5
-h = 5
-global time_global
+w = 7
+h = 7
+time_global = 0
 
 
 #@ Param Agents List of Tupels with Agent Parameters 
@@ -94,25 +94,25 @@ def simulate(t, n=0):
 #id, location, capacity ,speed, preferences[]
 
 
-test_agent0= Agent(5,(0,0),15,20, [0])
-#test_agent1= Agent(5,(3,3),15,20, [0])
-test_agent2= Agent(5,(6,6),15,20, [0])
-#test_agent4= Agent(5,(6,6),15,20, [0])
+test_agent0= Agent((0,0),15,1, [0])
+#test_agent1= Agent((3,3),15,20, [0])
+test_agent1= Agent((6,6),15,1, [0])
+#test_agent4= Agent((6,6),15,20, [0])
 
-agent_list=[test_agent0,test_agent2]
+agent_list=[test_agent0,test_agent1]
 print ("PRE MANAGER CONSTRUCT")
 #manager_t= Encp_manager((5,5),agent_list)
 
 
 
 
-task1= Task(5,(0,4))#should be won my agent 1
+task0= Task(5,(0,4))#should be won my agent 1
 
-task2= Task(5,(3,0))#should be won by agent 2 
+task1= Task(5,(3,0))#should be won by agent 2
 #task3= Task(4,(7,7))#should be won by ag3
 #test_agent= agent.Agent(5,(0,0),15,20, [0])
-initiator1 = Initiator(task1)
-initiator2 = Initiator(task2)
+initiator1 = Initiator(task0)
+initiator2 = Initiator(task1)
 #initiator3 = Initiator(task3)
 
 #init_world(5,5)

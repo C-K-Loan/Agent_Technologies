@@ -42,7 +42,7 @@ class Encp_manager():
         self.get_pre_bids()#collect al inital pre bids
         print("M-"+str(self.id)+"P1_____________DONE WITH FIRST COLLECTION OF BIDS______")
         
-        self.send_pre_accept()#send pre accet to agent, who is best_bid[0]    
+        self.send_pre_accept()#send pre accept to agent, who is best_bid[0]
         print("M-"+str(self.id)+"P1_____________DONE WITH FIRST PRE ACCEPT________________________")#if best_bider changed, go to beginning of p1.2
 
         self.send_pre_rejects()#send reject to every agent, who is not best_bid[0], they will answer withnwe bids, if bid is not better than best_bid[0]-> send defenitive bid()

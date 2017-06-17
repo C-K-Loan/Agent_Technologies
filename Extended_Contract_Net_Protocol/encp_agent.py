@@ -31,7 +31,7 @@ class Agent():
 #@schedeule[a][0] is bid that was send last to that manager 
 #@schedule[a][1] Boolean, IF true -> Bid send to Manager was DEFENTIVE, IF false -> Bid send to manager was PRE bid
 #@schedule [a][n] A list , 2 elements 
-    def __init__(self, id, x, k, g, p):
+    def __init__(self, x, k, g, p):
         # def __init__(self, capacity, location, speed, preferences):
         self.id = Agent.id_counter
         self.location = x
@@ -50,11 +50,6 @@ class Agent():
 
 
 # calculate using  |x1-x2| + |y1-y2|
-# todo Schedule berücksichtigen
-    def get_distance_to(self, location):
-        dist = abs(self.location[0] - location[0] )+ abs(self.location[1] - location[1])
-        return dist
-
 
 
 # calculate using  |x1-x2| + |y1-y2| , for location a to location b (tuples (x,y))
@@ -80,7 +75,7 @@ class Agent():
           return dist 
             
         
-        print("AG-ID:"+str(self.id)+"SCHEDULE NOT EMPTY! ; "+ str(self.schedule)) 
+        print("AG-ID:"+str(self.id)+"SCHEDULE NOT EMPTY! ; " + str(self.schedule))
         last_manager_added=0
         dist=0
         for manager_it in self.schedule:#sum all previous bids 
