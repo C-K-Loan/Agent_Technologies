@@ -10,6 +10,9 @@ Created on Sun Jun  4 23:29:43 2017
 import math
 from collections import OrderedDict # so we can remember, in which order we set the bids
 
+import copy
+
+
 class Agent():
     instances = []
     id_counter = 0
@@ -35,13 +38,16 @@ class Agent():
         # def __init__(self, capacity, location, speed, preferences):
         self.id = Agent.id_counter
         self.location = x
-        self.capacity = k
-        self.speed = g
+        self.max_capacity = k
+        self.charge = k
+        self.speed = float(g)
         self.preferences = p
         #self.schedule = {} 
         Agent.instances.append(self)
         Agent.id_counter += 1
-        self.schedule =  {}#key: manager , value0: bid value , value1 : bool defentive? 
+        self.schedule =  [] #new: [(manager,bid,definitiv),....]
+        #key: manager , value0: bid value , value1 : bool defentive?
+        self.distances= []
         
 
     def __str__(self):
@@ -54,15 +60,18 @@ class Agent():
 
 # calculate using  |x1-x2| + |y1-y2| , for location a to location b (tuples (x,y))
     def calculate_distance(self,a,b):
-        
-        
-        
-        
         dist = abs(a[0] - b[0] )+ abs(a[1] -b[1])
-        
-
         return dist
-            
+            # return how many charges are needed
+    def planCharge(self, charge, distance):
+        ret = -1 #first iteration wouldnt need recharge
+        c = charge
+        d = distance
+        while d > 0:
+            d -= c
+            c = self.max_capacity
+            ret = ret +1
+        return ret
 
 #redeschedule and try better bid
     def get_schedeuled_distance_to(self,manager_new):
@@ -70,31 +79,58 @@ class Agent():
         if(len( self.schedule)==0):# if schedule is empty, this will return false -> no need is taking care of scheduling
          # print("AG-ID:"+str(self.id)+"schedule was empty"+str((self.location,manager_new.x)))
          # print("AG-ID:"+str(self.id)+"SCHEDULE WAS [[[[]]]]:"+str(self.schedule))
-          dist= self.calculate_distance(self.location,manager_new.x )
+            dist= math.ceil(self.calculate_distance(self.location,manager_new.x)/ self.speed )
           #self.schedule[manager_new]= [dist,False]#update schedule with a list
-          return dist 
-            
-        
-        print("AG-ID:"+str(self.id)+"SCHEDULE NOT EMPTY! ; " + str(self.schedule))
-        last_manager_added=0
-        dist=0
-        for manager_it in self.schedule:#sum all previous bids 
-            last_manager_added= manager_it
-            print("it id:"+str(manager_it.id)+ ("new id:")+ str(manager_new.id))
-            if manager_it.id != manager_new.id:
-                dist+= self.schedule[manager_it][0]  #bid value  saved in thee dict
-                #print("DIST is " +str(dist))
-                last_manager_added= manager_it #in new Python versions, Dicts are orderd, so in the last iteration last_manager should become last manager added to dict
-                
-        #print("last manager added" + str(last_manager_added.x[1]))
-        if last_manager_added.id == manager_new.id:#only 1 manager in schedule
-            dist =self.calculate_distance (self.location, manager_new.x)#calculate distance from last job on schedule to new job from manager_new        
-            print("AG-ID:"+str(self.id)+"calculated Scheduled dist" + str(dist))
-            return dist                         
-        dist += self.calculate_distance (last_manager_added.x, manager_new.x)#calculate distance from last job on schedule to new job from manager_new
-        
-        print("AG-ID:"+str(self.id)+"calculated Scheduled dist" + str(dist))            
-        return dist
+
+            dist += self.planCharge(self.charge, dist)
+            return dist
+        l = len(self.schedule)
+        dist = self.calculate_distance(self.schedule[l][1], manager_new.x)
+        distcopy = dist
+        chargecopy = self.charge
+        bid = math.ceil(dist/self.speed) #Speed verbessert BID
+        bid += self.planCharge(chargecopy, distcopy) # Recharge verschlechtert Bid
+
+        #self.schedule.insert(l, (manager_new.x, dist))
+        return bid
+
+
+# """
+#         schedule_copy = copy.deepcopy(self.schedule)
+#         for i in range(len(self.schedule)-1):
+#             if i == 0:
+#                 firstDistance = self.schedule[0][1]
+#                 zwischen = self.calculate_distance(self.location, manager_new.x)
+#                 zwischen2 = self.calculate_distance(manager_new.x, self.schedule[i][0].x)
+#                 if zwischen + zwischen2 <= firstDistance:
+#                     self.schedule.insert(i,(manager_new, zwischen))
+#                     return
+#             bestindex = 0
+#             if  schedule_copy[i][0].x
+# """
+
+
+
+        # print("AG-ID:"+str(self.id)+"SCHEDULE NOT EMPTY! ; " + str(self.schedule))
+        # last_manager_added=0
+        # dist=0
+        # for manager_it in self.schedule:#sum all previous bids
+        #     last_manager_added= manager_it
+        #     print("it id:"+str(manager_it.id)+ ("new id:")+ str(manager_new.id))
+        #     if manager_it.id != manager_new.id:
+        #         dist+= self.schedule[manager_it][0]  #bid value  saved in the dict
+        #         #print("DIST is " +str(dist))
+        #         last_manager_added= manager_it #in new Python versions, Dicts are orderd, so in the last iteration last_manager should become last manager added to dict
+        #
+        # #print("last manager added" + str(last_manager_added.x[1]))
+        # if last_manager_added.id == manager_new.id:#only 1 manager in schedule
+        #     dist =self.calculate_distance (self.location, manager_new.x)#calculate distance from last job on schedule to new job from manager_new
+        #     print("AG-ID:"+str(self.id)+"calculated Scheduled dist" + str(dist))
+        #     return dist
+        # dist += self.calculate_distance (last_manager_added.x, manager_new.x)#calculate distance from last job on schedule to new job from manager_new
+        #
+        # print("AG-ID:"+str(self.id)+"calculated Scheduled dist" + str(dist))
+        # return dist
 
 
 ##edge from step 1 to 2,
@@ -104,7 +140,7 @@ class Agent():
         
 
         if manager in self.schedule:
-            if (new_pre_bid< self.schedule[manager][0]):#only send the bid, when it was better than the old one
+            if (new_pre_bid < self.schedule[manager][0]):#only send the bid, when it was better than the old one
                 print("AG-ID:"+str(self.id)+"sending Imrpoved bid :"+ str(new_pre_bid))
                 self.schedule[manager]=[new_pre_bid,False] # key: manager, value is the bid the agent send him            
                 manager.recv_pre_bid(self,new_pre_bid)          

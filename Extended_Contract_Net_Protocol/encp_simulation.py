@@ -94,9 +94,9 @@ def simulate(t, n=0):
 #id, location, capacity ,speed, preferences[]
 
 
-test_agent0= Agent((0,0),15,1, [0])
+test_agent0= Agent((0,0),15,1, [0,1])
 #test_agent1= Agent((3,3),15,20, [0])
-test_agent1= Agent((6,6),15,1, [0])
+test_agent1= Agent((6,6),15,1, [0,1])
 #test_agent4= Agent((6,6),15,20, [0])
 
 agent_list=[test_agent0,test_agent1]
@@ -109,11 +109,12 @@ print ("PRE MANAGER CONSTRUCT")
 task0= Task(5,(0,4))#should be won my agent 1
 
 task1= Task(5,(3,0))#should be won by agent 2
+task2 = Task(3,(2,1))
 #task3= Task(4,(7,7))#should be won by ag3
 #test_agent= agent.Agent(5,(0,0),15,20, [0])
-initiator1 = Initiator(task0)
-initiator2 = Initiator(task1)
-#initiator3 = Initiator(task3)
+initiator0 = Initiator(task0)
+initiator1 = Initiator(task1)
+initiator2 = Initiator(task2)
 
 #init_world(5,5)
 simulate(10)
