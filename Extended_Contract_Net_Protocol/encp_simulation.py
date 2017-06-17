@@ -96,7 +96,7 @@ def simulate(t, n=0):
 
 test_agent0= Agent(5,(0,0),15,20, [0])
 #test_agent1= Agent(5,(3,3),15,20, [0])
-test_agent2= Agent(5,(10,10),15,20, [0])
+test_agent2= Agent(5,(6,6),15,20, [0])
 #test_agent4= Agent(5,(6,6),15,20, [0])
 
 agent_list=[test_agent0,test_agent2]
