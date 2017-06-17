@@ -105,7 +105,7 @@ class Encp_manager():
             agent_sender.recv_pre_accept(self)
             self.best_bid_changed= True
         else:
-            agent_sender.recv_def_reject()
+            agent_sender.recv_def_reject(self)
             self.best_bid_changed= False
             
 
