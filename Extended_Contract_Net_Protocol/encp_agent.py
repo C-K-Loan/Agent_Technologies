@@ -226,7 +226,9 @@ class Agent():
         if manager in self.schedule:
             self.schedule.pop(manager, None)
 
-        
+    def drive(self):
+
+
 """        
         print("AG-ID:"+str(self.id)+"SCHEDULE NOT EMPTY! ") 
         for manager_it in self.schedule:#sum all previous bids 
