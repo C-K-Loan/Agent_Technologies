@@ -168,7 +168,7 @@ class Encp_manager():
     def send_def_reject(self):
         for agent_it in Agent.instances:
             if(int(agent_it.id) ==int(self.best_bid[1])):
-                print("M-ID: "+str(self.id)+"sending def Acc to agent ID : "+ str(agent_it.id) )
+                print("M-ID: "+str(self.id)+"sending DEF REJECT to agent ID : "+ str(agent_it.id) )
                 agent_it.recv_def_accept(self)
  
 """
