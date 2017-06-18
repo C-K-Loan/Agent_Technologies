@@ -97,7 +97,11 @@ def simulate(t,manager_release_time_list):
                     print(">>>>>>>>>>>MANAGER ID :"+ str(manager_sim.id)+"TURN<<<<<<<<<<")
                     if manager_sim.finished == False and manager_sim.phase == 1: # ALPHA IF
                         manager_sim.get_pre_bids()
-
+                input("should render now")
+                animation.update_bids()
+                animation.mainloop()
+                
+                
                 print("PHASE1:>>>>>>>>>>>>EVALUATING BIDS....<<<<<<<<<<<<<")
                 #Phase1#STEP 3 And 4 Evaluate Pre Bids and send Responses to Agents, Agents will react with DEF bids
                 for manager_sim in manager_release_time_list[time]:#simulate evermanger for time 
@@ -131,7 +135,7 @@ def simulate(t,manager_release_time_list):
                         manager_sim.set_phase()
                 
                # animation.update_bids()#RENDERING
-              #  animation.mainloop()
+                
 
                 print("PHASE2:>>>>>>>>>>>>SENDING DEF   REJECTS<<<<<<<<<<<<<")                    
                 #Phase 2 STEP 3 Agents havesend Def bids by now, if best_bidder didint changed manager sends def Accepts and Def Rejects 
@@ -187,6 +191,8 @@ print ("PRE MANAGER CONSTRUCT")
 
 manager1=Encp_manager((2,3),agent_list)
 manager2=Encp_manager((0,1),agent_list)
+manager3=Encp_manager((6,6),agent_list)
+
 #A list, whoose elements are Lists of Managers 
 #list [0] is a list of managers, who should be initated for Time 0
 #list [n] is list of managers, who should be initated at time N
