@@ -8,6 +8,8 @@ Created on Sun Jun  4 23:29:43 2017
 
 #import encp_manager as manager
 import math
+import copy
+
 from collections import OrderedDict # so we can remember, in which order we set the bids
 
 class Agent():
@@ -31,7 +33,8 @@ class Agent():
 #@schedeule[a][0] is bid that was send last to that manager 
 #@schedule[a][1] Boolean, IF true -> Bid send to Manager was DEFENTIVE, IF false -> Bid send to manager was PRE bid
 #@schedule [a][n] A list , 2 elements 
-    def __init__(self, id, x, k, g, p):
+#@preferences[], a List with ID'S of all Agents, preferences[0] most favorized manager, pref[n] lest favorized manager
+    def __init__(self, x, k, g, p):
         # def __init__(self, capacity, location, speed, preferences):
         self.id = Agent.id_counter
         self.location = x
@@ -71,21 +74,127 @@ class Agent():
 
 #redeschedule and try better bid
     def get_schedeuled_distance_to(self,manager_new):
+        dist=0
+        last_manager_added=0
+        managers_calculated_count=0
+        last_location=self.location
         
         if(len( self.schedule)==0):# if schedule is empty, this will return false -> no need is taking care of scheduling
-         # print("AG-ID:"+str(self.id)+"schedule was empty"+str((self.location,manager_new.x)))
-         # print("AG-ID:"+str(self.id)+"SCHEDULE WAS [[[[]]]]:"+str(self.schedule))
+          print("AG-ID:"+str(self.id)+"schedule was empty")
           dist= self.calculate_distance(self.location,manager_new.x )
-          #self.schedule[manager_new]= [dist,False]#update schedule with a list
           return dist 
             
+
+       # dist+=self.calculate_distance(self.location,manager_it.x)   #ad cur location anyways   
+#sum up all def bids               
+        for manager_it in self.schedule:#sum all previous bids which where DEF first! ITERATE WITH PREFERENCES!
+            if self.schedule[manager_it][1]==True:
+                #backup_schedule.pop(manager_it)
+                if(managers_calculated_count == 0):
+                    dist+=self.calculate_distance(self.location,manager_it.x)                
+                else:
+                    dist+=self.calculate_distance(last_manager_added.x,manager_it.x)                
+                    
+                last_manager_added = manager_it
+                managers_calculated_count+=1
+
+
+           
+#sum up all pre bids                     
+        for manager_it in self.schedule:
+            print("AG-ID:"+str(self.id)+"Schedule entry for Manager ID:" + str(manager_it.id)+"is :" + str(self.schedule[manager_it]))            
+            print("man calc count ="+ str(managers_calculated_count))
+            if self.schedule[manager_it][1]== False:
+                if managers_calculated_count == 0 :           
+                    print("calc own dist")
+                    dist+= self.calculate_distance(self.location,manager_it.x )#shoudnt actually happen
+                else:
+                    print("calc last manager to man it dist LasT ID : "+ str(last_manager_added.id )+ "IT ID:" +str(last_manager_added.id))
+                    dist+=self.calculate_distance(last_manager_added.x,manager_it.x)  
+            last_manager_added = manager_it
+            managers_calculated_count+=1
+
+
+
+        if manager_new not in self.schedule: #if he isnt there, we didint take care of him, since weonly worked with schedules
+            dist+=self.calculate_distance(last_manager_added.x,manager_new.x)  
+                        
+
+        print("AG-ID:"+str(self.id)+"calculated Scheduled dist" + str(dist))            
+         
+        return dist 
         
-        print("AG-ID:"+str(self.id)+"SCHEDULE NOT EMPTY! ; "+ str(self.schedule)) 
-        last_manager_added=0
-        dist=0
+        
+
+##edge from step 1 to 2,
+    def send_pre_bid(self,manager):
+        print("AG-ID:"+str(self.id)+"<______IN PRE BID FOR_________MANAGER  ID: "+str(manager.id))
+        new_pre_bid = self.get_schedeuled_distance_to(manager)
+        
+
+        if manager in self.schedule:
+            if (new_pre_bid< self.schedule[manager][0]):#only send the bid, when it was better than the old one
+                print("AG-ID:"+str(self.id)+"sending Imrpoved bid :"+ str(new_pre_bid))
+                self.schedule[manager]=[new_pre_bid,False] # key: manager, value is the bid the agent send him            
+                manager.recv_pre_bid(self,new_pre_bid)          
+#                print("AG-ID:"+str(self.id)+", schedule is "+ str(self.schedule))
+                return new_pre_bid
+            else :
+                print("AG-ID:"+ str(self.id)+ " Old bid:"+str(self.schedule[manager][0])+", new bid:"+ str(new_pre_bid)+", Stoping Bidding with M-"+str(manager.id))
+                self.schedule.pop(manager)
+                return math.inf#or maybe smth else but not nothing!or mybe?
+
+        print("AG-ID:"+str(self.id)+"sending FIRST pre bid value: "+str(new_pre_bid)+(" to manager ID : "+str(manager.id)))
+        self.schedule[manager]= [new_pre_bid,False]#update schedule with a list
+        return new_pre_bid
+        
+# edge from step 3 to 5
+    def send_def_bid(self,manager):
+        
+        self.schedule[manager][1]=True# set bid value as DEF, but do not save the value for bid yet!
+        def_bid = self.get_schedeuled_distance_to(manager)            
+        print("AG-ID:"+ str(self.id)+ "sending def bid Value:" + str(def_bid)+"to Manager ID: " + str(manager.id))
+        manager.recv_def_bid(self,def_bid)
+
+
+# edge from step 2 to 4
+#TODO re schedeuling 
+#called when recieving a pre reject, try to reschedule and send a better bid
+    def recv_pre_reject(self,manager):
+        
+        print("Ag-ID "+  str(self.id)+"Recieved pre Reject from Manager ID : "+ str(manager.id))
+        self.send_pre_bid(manager)#try to send a better bid
+        
+
+
+# edge from step 2 to 3
+    def recv_pre_accept(self,manager):
+        
+        print("Ag-ID "+  str(self.id)+"Recieved pre Accept from Manager ID : "+ str(manager.id))
+        self.send_def_bid(manager)
+
+
+# edge from step 5 to 6 TODO IMPLEMENT Rescheduleuing
+    def recv_def_accept(self,manager):
+        #if we recieve def accept and manager is not in schedeule, this means special case, we were perviously rejected and coudnt improve, but manager wants old bad bid->!wokrs!
+        print("Ag-ID "+  str(self.id)+"Recieved |def Accept| WON BIDDING WITH BID >>>>"+ str(self.schedule[manager][0] )+ "FOR MANAGER ID" + str(manager.id))
+        self.schedule[manager][1]= True#set DEF bool
+
+        #todo, start doing job and def add to schedeule
+
+# edge from step 4 to 7 TODO IMPLEMENT RESCHEDEULING
+#should be done,e agent should just stop communicating after def rreject
+    def recv_def_reject(self,manager):
+        print("Ag-ID "+  str(self.id)+"RECIEVED |DEFF REJECT| FROM MANAGER >>>>"+ str(manager.id))
+        if manager in self.schedule:
+            self.schedule.pop(manager, None)
+
+        
+"""        
+        print("AG-ID:"+str(self.id)+"SCHEDULE NOT EMPTY! ") 
         for manager_it in self.schedule:#sum all previous bids 
             last_manager_added= manager_it
-            print("it id:"+str(manager_it.id)+ ("new id:")+ str(manager_new.id))
+            #print("it id:"+str(manager_it.id)+ ("new id:")+ str(manager_new.id))
             if manager_it.id != manager_new.id:
                 dist+= self.schedule[manager_it][0]  #bid value  saved in thee dict
                 #print("DIST is " +str(dist))
@@ -100,62 +209,5 @@ class Agent():
         
         print("AG-ID:"+str(self.id)+"calculated Scheduled dist" + str(dist))            
         return dist
+"""
 
-
-##edge from step 1 to 2,
-    def send_pre_bid(self,manager):
-        print("IN SEND PRE BID::::::")
-        new_pre_bid = self.get_schedeuled_distance_to(manager)
-        
-
-        if manager in self.schedule:
-            if (new_pre_bid< self.schedule[manager][0]):#only send the bid, when it was better than the old one
-                print("AG-ID:"+str(self.id)+"sending Imrpoved bid :"+ str(new_pre_bid))
-                self.schedule[manager]=[new_pre_bid,False] # key: manager, value is the bid the agent send him            
-                manager.recv_pre_bid(self,new_pre_bid)          
-#                print("AG-ID:"+str(self.id)+", schedule is "+ str(self.schedule))
-                return new_pre_bid
-            else :
-                print("AG-ID:"+ str(self.id)+ " Old bid:"+str(self.schedule[manager][0])+", new bid:"+ str(new_pre_bid)+", Stoping Bidding with M-"+str(manager.id))
-      
-        print("AG-ID:"+str(self.id)+"sending FIRST pre bid to the manager value:"+str(new_pre_bid))
-        self.schedule[manager]= [new_pre_bid,False]#update schedule with a list
-        #print("AG-ID:"+str(self.id)+", schedule is "+ str(self.schedule))
-        return new_pre_bid
-        
-# edge from step 3 to 5
-    def send_def_bid(self,manager):
-        def_bid = self.get_schedeuled_distance_to(manager)
-        print("AG-ID:"+ str(self.id)+ "sending def bid Value:" + str(def_bid))
-        manager.recv_def_bid(self,def_bid)
-
-
-# edge from step 2 to 4
-#TODO re schedeuling 
-#called when recieving a pre reject, try to reschedule and send a better bid
-    def recv_pre_reject(self,manager):
-        self.send_pre_bid(manager)#try to send a better bid
-        
-
-
-# edge from step 2 to 3
-    def recv_pre_accept(self,manager):
-        print("Ag-ID "+  str(self.id)+"Recieved pre Accept")
-        self.send_def_bid(manager)
-
-
-# edge from step 5 to 6 TODO IMPLEMENT Rescheduleuing
-    def recv_def_accept(self,manager):
-        print("Ag-ID "+  str(self.id)+"Recieved |def Accept| WON BIDDING WITH BID >>>>"+ str(self.schedule[manager][0] )+ "for Location: " + str(manager.x))
-        self.schedule[manager][1]= True#set DEF bool
-
-        #todo, start doing job and def add to schedeule
-
-# edge from step 4 to 7 TODO IMPLEMENT RESCHEDEULING
-#should be done,e agent should just stop communicating after def rreject
-    def recv_def_reject(self,manager):
-        print("Ag-ID "+  str(self.id)+"Schedule is"+ str(self.schedule))
-        print("Ag-ID "+  str(self.id)+"Recieved Def Rej, LOST BIDDING WITH BID: >>>>"+str(self.schedule[manager][0]))
-        self.schedule.pop(manager, None)
-
-    
