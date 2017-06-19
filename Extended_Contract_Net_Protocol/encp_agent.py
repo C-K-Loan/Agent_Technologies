@@ -97,23 +97,26 @@ class Agent():
 
     def get_scheduled_distance_to_new_manager(self, manager_new, pre_accepted=False):
         dist = 0
-
+        print("CALCULATING BIDS FOR NEW MANAGER")
         
-        dist+= self.def_path_sum
         
         if self.pre_path != []:
+            dist+=self.calculate_distance(self.last_pre_location, self.pre_path[0].x)[1]
             dist+=self.dist_of_path(self.pre_path)
-            
+
+        
+        
+        print("PRE PATH SUM RETURNED: " + str(dist)+"and pre_path sum is"+ str(self.pre_path_sum))     
         dist += self.calculate_distance(self.last_pre_location,manager_new.x)[1]
+        print("Calc Dist from" + str(self.last_pre_location)+"TO"+str(manager_new.x)+"DIST:"+ str(dist))     
 
         dist += self.pre_path_sum    
         
+        
         self.pre_path.append(manager_new)
         self.last_pre_location = manager_new.x
-        self.schedule[manager_new]= [dist,False]#update schedule with a list
         self.tasks.append(manager_new)
-        self.pre_path_sum = self.dist_of_path(self.pre_path)
-        
+        self.pre_path_sum = dist
         
         return dist
 
@@ -122,6 +125,7 @@ class Agent():
         dist = 0
  
 
+        print("CALCULATING BIDS FOR KNOWn MANAGER")
         dist+=self.def_path_sum
         print("PRE PATH SUM IS:" + str(self.def_path_sum)+"and dist is"+str(dist))
         dist += self.pre_path_sum    
@@ -141,7 +145,7 @@ class Agent():
    
         self.last_pre_location = manager_new.x
         self.schedule[manager_new]= [dist,False]#update schedule with a list  
-        self.pre_path_sum = self.dist_of_path(self.pre_path)
+        self.pre_path_sum = dist
 
         return dist
 
@@ -150,7 +154,7 @@ class Agent():
         first = path[0]
         for manager_it in path:
             if(first.id != manager_it.id):
-                dist+= self.calculate_distance(first.x,manager_it.x)[0]            
+                dist+= self.calculate_distance(first.x,manager_it.x)[1]            
             first= manager_it
         return dist
 
@@ -190,9 +194,10 @@ class Agent():
 
         print("Ag-ID "+  str(self.id)+"Recieved pre Reject from Manager ID : "+ str(manager.id))
         new_bid = self.send_pre_bid(manager)#try to send a better bid
+        self.schedule[manager_new]= [dist,False]#update schedule with a list
             
         if new_bid < self.schedule[manager][0]:
-                print("AG-ID:"+str(self.id)+"sending Imrpoved bid :"+ str(new_pre_bid) + "old bid was: "+ str(self.schedule[manager][0]))
+                print("AG-ID:"+str(self.id)+"sending Imrpoved bid :"+ str(new_bid) + "old bid was: "+ str(self.schedule[manager][0]))
                 self.schedule[manager]=[new_bid,False] 
                 self.last_pre_location = manager.x
                 manager.recv_pre_bid(self,new_bid)#???
