@@ -1,0 +1,27 @@
+manager1=Encp_manager((1,0),agent_list)
+
+manager2=Encp_manager((1,2),agent_list)
+#manager3=Encp_manager((6,6),agent_list)
+
+#A list, whoose elements are Lists of Managers 
+#list [0] is a list of managers, who should be initated for Time 0
+#list [n] is list of managers, who should be initated at time N
+manager_release_time_list= []
+manager_release_time_list.insert(0,[])
+manager_release_time_list.insert(1,[])
+manager_release_time_list.insert(2,[])
+manager_release_time_list.insert(3,[])
+manager_release_time_list.insert(4,[])#Encp_manager((3,0),agent_list)
+manager_release_time_list.insert(5,[manager1,manager2])
+manager_release_time_list.insert(6,[])
+manager_release_time_list.insert(7,[])
+manager_release_time_list.insert(8,[])
+manager_release_time_list.insert(9,[])
+manager_release_time_list.insert(10,[])
+manager_release_time_list.insert(11,[])
+
+animation = Encp_animation()
+
+#print ("relase time lsit :" + str(manager_release_time_list))
+simulate(10,manager_release_time_list)
+
