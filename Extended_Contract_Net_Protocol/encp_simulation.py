@@ -93,15 +93,12 @@ def simulate(t,manager_release_time_list):
                 print(">>>>>>>>>>>>ITERATION : "+ str(i) + "FOR TIME "+ str(time)+"<<<<<<<<<<<<<")
                 #Phase 1STEP 2 collect Pre Bids
                 print("PHASE1:>>>>>>>>>>>>COLLECTING PRE BIDS STEP 2<<<<<<<<<<<<<")     
-                for manager_sim in manager_release_time_list[time]:#simulate evermanger for time
-                    print(">>>>>>>>>>>MANAGER ID :" + str(manager_sim.id) + "TURN<<<<<<<<<<")
-                    manager_sim.set_order()
-                    for i in range(len(manager_sim.order) -1):
-                        if manager_sim.finished == False and manager_sim.phase == 1: # ALPHA IF
-                            manager_sim.get_pre_bids()
-                input("should render now")
-                animation.update_bids()
-                animation.mainloop()
+                for manager_sim in manager_release_time_list[time]:#simulate evermanger for time 
+                    print(">>>>>>>>>>>MANAGER ID :"+ str(manager_sim.id)+"TURN<<<<<<<<<<")
+                    if manager_sim.finished == False and manager_sim.phase == 1: # ALPHA IF
+                        manager_sim.get_pre_bids()
+                animation.update_bids()#write a row for all bids
+                animation.update_reactions()   
                 
                 
                 print("PHASE1:>>>>>>>>>>>>EVALUATING BIDS....<<<<<<<<<<<<<")
@@ -110,6 +107,7 @@ def simulate(t,manager_release_time_list):
                     print(">>>>>>>>>>>MANAGER ID :"+ str(manager_sim.id)+"TURN<<<<<<<<<<")
                     if manager_sim.finished == False and manager_sim.phase == 1: # ALPHA IF
                         manager_sim.find_and_set_best_bidder()                        
+                #animation.update_bids()
                 
                 print("PHASE1:>>>>>>>>>>>>SENDING PRE REJECTS <<<<<<<<<<<<<")
                 #Phase1#STEP 3 And 4 Evaluate Pre Bids and send Responses to Agents, Agents will react with DEF bids
@@ -117,8 +115,9 @@ def simulate(t,manager_release_time_list):
                     print(">>>>>>>>>>>MANAGER ID :"+ str(manager_sim.id)+"TURN<<<<<<<<<<")
                     if manager_sim.finished == False and manager_sim.phase == 1: # ALPHA IF
                         manager_sim.send_pre_rejects()#after this, everyone who is rejected whill send a new pre_bid, if they can imrpove
-
-
+                animation.update_reactions()#special case, empty brackets   
+                
+                #TODO RENDER WHOEVER IS REJECTED
 
                 print("PHASE1:>>>>>>>>>>>>SENDING PRE   ACCEPTS<<<<<<<<<<<<<")
                 #Phase1#STEP 3 And 4 Evaluate Pre Bids and send Responses to Agents, Agents will react with DEF bids
@@ -126,8 +125,11 @@ def simulate(t,manager_release_time_list):
                     print(">>>>>>>>>>>MANAGER ID :"+ str(manager_sim.id)+"TURN<<<<<<<<<<")
                     if manager_sim.finished == False and manager_sim.phase == 1: # ALPHA IF
                         manager_sim.send_pre_accepts()#after this, def bid is send automatically
-
+                #TODO RENDER WHOEVER IS ACCEPTED
+                #animation_render
          #wait 1 s for agents to answer 
+                animation.update_bids()#incase we have improved bids since last reject /this is either PRe /Def bids
+                animation.update_reactions()   
 
                 print(">>>>>>>>>>>>SETTING PHASES<<<<<<<<<<<<<")
                 #update phase status, check if there is a neew best bidder, if yes -> phase 1, if best bidder didint change ->phase 2 (sending DEF Rej/Acc)
@@ -135,8 +137,7 @@ def simulate(t,manager_release_time_list):
                     print(">>>>>>>>>>>MANAGER ID :"+ str(manager_sim.id)+"TURN<<<<<<<<<<")
                     if manager_sim.finished == False:
                         manager_sim.set_phase()
-                
-               # animation.update_bids()#RENDERING
+                #TODO Render phase reset or render going to phase 2 
                 
 
                 print("PHASE2:>>>>>>>>>>>>SENDING DEF   REJECTS<<<<<<<<<<<<<")                    
@@ -146,18 +147,23 @@ def simulate(t,manager_release_time_list):
                     if manager_sim.finished == False and manager_sim.phase == 2: # ALPHA IF
                         manager_sim.send_def_reject()
 
+                #todo Render Def Rejects
+
                 print("PHASE2:>>>>>>>>>>>>SENDING DEF ACCEPTS  <<<<<<<<<<<<<")                    
                 #Phase 2 STEP 3 Agents havesend Def bids by now, if best_bidder didint changed manager sends def Accepts and Def Rejects 
                 for manager_sim in manager_release_time_list[time]:#simulate evermanger for time 
                     print(">>>>>>>>>>>MANAGER ID :"+ str(manager_sim.id)+"TURN<<<<<<<<<<")
                     if manager_sim.finished == False and manager_sim.phase == 2: # ALPHA IF
                         manager_sim.send_def_accept()
+                #todo Render Def Rejects
+
 
                 i+=1 
                 input("press enter")    
-        
+
         
         time_global += 1
+    animation.mainloop()
 
                 
     
@@ -193,7 +199,7 @@ print ("PRE MANAGER CONSTRUCT")
 
 manager1=Encp_manager((2,3),agent_list)
 manager2=Encp_manager((0,1),agent_list)
-manager3=Encp_manager((6,6),agent_list)
+#manager3=Encp_manager((6,6),agent_list)
 
 #A list, whoose elements are Lists of Managers 
 #list [0] is a list of managers, who should be initated for Time 0
