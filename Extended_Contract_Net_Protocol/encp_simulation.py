@@ -161,7 +161,9 @@ def simulate(t,manager_release_time_list):
                 i+=1 
                 input("press enter")    
 
-        
+        print(">>>>>>>>>>>>>>>>>TIME :"+str(time_global)+" Simulating Steps For agents<<<<<<<<<<")
+        for agent_sim in Agent.instances:
+            agent_sim.move()
         time_global += 1
     animation.mainloop()
 
@@ -187,18 +189,18 @@ def confirm_no_more_managers_to_simulate(time):
 #id, location, capacity ,speed, preferences[]
 
 
-test_agent0= Agent((0,1),5,1,(0,1))#he manager likes 0 >1
+test_agent0= Agent((0,0),1,100,(0,1))#he manager likes 0 >1
 #test_agent1= Agent(5,(3,3),15,20, [0])
-test_agent2= Agent((4,1),5,1,(0,1))# he manager likes 0>1
+test_agent2= Agent((3,1),1,100,(0,1))# he manager likes 0>1
 #test_agent4= Agent(5,(6,6),15,20, [0]) 
 
 agent_list=[test_agent0,test_agent2]
 print ("PRE MANAGER CONSTRUCT")
 #manager_t= Encp_manager((5,5),agent_list)
 
+manager1=Encp_manager((1,0),agent_list)
 
-manager1=Encp_manager((2,3),agent_list)
-manager2=Encp_manager((0,1),agent_list)
+manager2=Encp_manager((1,2),agent_list)
 #manager3=Encp_manager((6,6),agent_list)
 
 #A list, whoose elements are Lists of Managers 
