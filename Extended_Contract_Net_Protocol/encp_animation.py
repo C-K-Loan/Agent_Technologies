@@ -29,6 +29,15 @@ class Encp_animation(tk.Tk,):
     def update_reactions(self):
         for table in Encp_table.instances:
             table.render_reactions()
+    
+    def update_reactions_after_set_phase(self):
+        for table in Encp_table.instances:
+            table.render_reactions_after_phase_set()
+
+    def update_time(self,time):
+        for table in Encp_table.instances:
+            table.render_time(time)
+        
         
 
 
@@ -57,6 +66,20 @@ class Encp_table(tk.Frame):
         widget = self._widgets[row][column]
         widget.configure(text=value)
         
+    def render_time(self,time):
+
+        current_row = []
+        
+        #self.render_iteration_num()
+
+        #print(str(self.manager_to_render.bids[agent_it]))
+        label = tk.Label(self,text="TIME IS SET TO T"+ str(time),borderwidth=10, width=25)
+        label.grid(row=self.rows_rendered, column=0, sticky="nsew", padx=1, pady=1)
+        current_row.append(label)
+        #self.rows_rendered+=1
+        self.rows_rendered+=1
+        self._widgets.append(current_row)
+        
 
 
 #generate head row
@@ -77,7 +100,7 @@ class Encp_table(tk.Frame):
         #generate for Manager a Col
         self._widgets.append(current_row)
         current_row = []
-        print("MANAGER TO RENDER_"+str(self.manager_to_render))
+        #print("MANAGER TO RENDER_"+str(self.manager_to_render))
         label = tk.Label(self,text="ENCP MANAGER ID: "+str(self.manager_to_render.id)+" Location:"+str(self.manager_to_render.x),borderwidth=10, width=25)
         label.grid(row=self.rows_rendered, column=Agent.id_counter+2, sticky="nsew", padx=1, pady=1)
         current_row.append(label)
@@ -97,7 +120,7 @@ class Encp_table(tk.Frame):
         self.render_iteration_num()
 
         for agent_it in self.manager_to_render.bids:
-            print(str(self.manager_to_render.bids[agent_it]))
+            #print(str(self.manager_to_render.bids[agent_it]))
             label = tk.Label(self,text="Pre Bid: "+ str(self.manager_to_render.bids[agent_it][0]),borderwidth=10, width=25)
             label.grid(row=self.rows_rendered, column=agent_it.id+1, sticky="nsew", padx=1, pady=1)
             current_row.append(label)
@@ -113,19 +136,27 @@ class Encp_table(tk.Frame):
         label_it_num = tk.Label(self,text="#"+ str(self.iteration),borderwidth=10, width=25)
         label_it_num.grid(row=self.rows_rendered, column=0, sticky="nsew", padx=1, pady=1)
         current_row.append(label_it_num)
-         
-
+            #when new time begins, render one empty row and reset variables
+    #def render_new_time_row:
+     #   return
     def render_def_bids(self):
-
-        # Dictionary for Key:Agent Value:Tuple (BID,ID of agent)
-        #fill rows >0 with bid values and reaction of encp manager
-    
+   
+        current_row = []
+        self.render_iteration_num()
+#render empty row, since no def bids in phase 1
+        if self.manager_to_render.phase ==1:
+            for agent_it in self.manager_to_render.bids:
+                label = tk.Label(self,text="No Def Bid-> Manager in Phase 1: "+ str(self.manager_to_render.bids[agent_it][0]),borderwidth=10, width=25)
+                label.grid(row=self.rows_rendered, column=agent_it.id+1, sticky="nsew", padx=1, pady=1)
+                current_row.append(label)
+            return
+            
+            
         current_row = []
     
         self.render_iteration_num()
         for agent_it in self.manager_to_render.bids:
-            print(str(self.manager_to_render.bids[agent_it]))
-            label = tk.Label(self,text="Pre Bid: "+ str(self.manager_to_render.bids[agent_it][0]),borderwidth=10, width=25)
+            label = tk.Label(self,text="Def_Bid: "+ str(self.manager_to_render.bids[agent_it][0]),borderwidth=10, width=25)
             label.grid(row=self.rows_rendered, column=agent_it.id+1, sticky="nsew", padx=1, pady=1)
             current_row.append(label)
 
@@ -152,7 +183,7 @@ class Encp_table(tk.Frame):
         current_row = []
 
         for agent_it in self.manager_to_render.last_reaction_to_manager:
-                render_string +="|"+self.manager_to_render.last_reaction_to_manager[agent_it]
+                render_string +=self.manager_to_render.last_reaction_to_manager[agent_it]+"|"
         if render_string == "":
             render_string="NO REACTIONS YET SEND"            
             
@@ -162,20 +193,27 @@ class Encp_table(tk.Frame):
             
         self.rows_rendered+=1
 
-    #render the decision of manager in top right coorner for is col and iteration num
-    def render_manager_decision(self,decision_type,value,was_was_resett):
-
         
-#        if decision_type =="pre_acc":
- #       if decision_type =="pre_rej":
-  #      if decision_type =="def_acc":
-   #     if decision_type =="def_acc":
 
-
+    def render_reactions_after_phase_set(self):
+        render_string=""
+        current_row = []
+        
+        if self.manager_to_render.phase==2:
+            render_string+= "MANAGER ID :" + str(self.manager_to_render.id)+ " PHASE 2 "
+        else :
+            render_string+= "MANAGER ID :" + str(self.manager_to_render.id)+ " PHASE 1 "
+        
+        for agent_it in self.manager_to_render.last_reaction_to_manager:
+                render_string +=self.manager_to_render.last_reaction_to_manager[agent_it]+"|"
+     
+        label = tk.Label(self,text=render_string,borderwidth=10, width=100)
+        label.grid(row=self.rows_rendered, column=Agent.id_counter+2, sticky="nsew", padx=1, pady=1)
+        current_row.append(label)
             
-        
-        #TODO
-        x=1
+        self.rows_rendered+=1
+
+
 
 
 """
