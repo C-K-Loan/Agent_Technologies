@@ -66,7 +66,7 @@ class Encp_manager():
         print("M-ID:"+str(self.id)+"Collecting bids...")
         for agent_it in Agent.instances: #ANNOUNCE TASK/Inform Every Agent and get Pre Bid (1) Task Announcement and (2) Recieving end of Pre Bid
             self.bids[agent_it] = (agent_it.send_pre_bid(self), agent_it.id)#aka Call for proposals(cfp),Use Agent as Key and Bid as Value
-            print("M-ID: "+str(self.id)+"Recieved bid :" + str(self.bids[agent_it][0]) + "from Agent ID:"+ str(self.bids[agent_it][1]))
+            print("M-ID: "+str(self.id)+"Recieved bid: " + str(self.bids[agent_it][0]) + "    from Agent ID:"+ str(self.bids[agent_it][1]))
             
         self.find_and_set_best_bidder()
         
