@@ -87,10 +87,12 @@ def simulate(t,manager_release_time_list):
     #every time iteration, tasks get announced and if the time is right, Encp manager will be created
     for time in range(t):
         i = 0
+
         if (manager_release_time_list[time]!= []):# if list is not empty at position, then there are managers to simulate
+            animation.update_time(time)
             while(confirm_no_more_managers_to_simulate(time) == False):#Only simulate, if managers for that time are unfinished
                    
-                print(">>>>>>>>>>>>ITERATION : "+ str(i) + "FOR TIME "+ str(time)+"<<<<<<<<<<<<<")
+                print("|||||||||||||||||||||ITERATION : "+ str(i) + "FOR TIME "+ str(time)+"||||||||||||||")
                 #Phase 1STEP 2 collect Pre Bids
                 print("PHASE1:>>>>>>>>>>>>COLLECTING PRE BIDS STEP 2<<<<<<<<<<<<<")     
                 for manager_sim in manager_release_time_list[time]:#simulate evermanger for time 
@@ -98,7 +100,6 @@ def simulate(t,manager_release_time_list):
                     if manager_sim.finished == False and manager_sim.phase == 1: # ALPHA IF
                         manager_sim.get_pre_bids()
                 animation.update_bids()#write a row for all bids
-                animation.update_reactions()   
                 
                 
                 print("PHASE1:>>>>>>>>>>>>EVALUATING BIDS....<<<<<<<<<<<<<")
@@ -108,6 +109,16 @@ def simulate(t,manager_release_time_list):
                     if manager_sim.finished == False and manager_sim.phase == 1: # ALPHA IF
                         manager_sim.find_and_set_best_bidder()                        
                 #animation.update_bids()
+
+
+                print("PHASE1:>>>>>>>>>>>>SENDING PRE   ACCEPTS<<<<<<<<<<<<<")
+                #Phase1#STEP 3 And 4 Evaluate Pre Bids and send Responses to Agents, Agents will react with DEF bids
+                for manager_sim in manager_release_time_list[time]:#simulate evermanger for time 
+                    print(">>>>>>>>>>>MANAGER ID :"+ str(manager_sim.id)+"TURN<<<<<<<<<<")
+                    if manager_sim.finished == False and manager_sim.phase == 1: # ALPHA IF
+                        manager_sim.send_pre_accepts()#after this, def bid is send automatically
+ 
+                animation.update_reactions()   
                 
                 print("PHASE1:>>>>>>>>>>>>SENDING PRE REJECTS <<<<<<<<<<<<<")
                 #Phase1#STEP 3 And 4 Evaluate Pre Bids and send Responses to Agents, Agents will react with DEF bids
@@ -116,18 +127,9 @@ def simulate(t,manager_release_time_list):
                     if manager_sim.finished == False and manager_sim.phase == 1: # ALPHA IF
                         manager_sim.send_pre_rejects()#after this, everyone who is rejected whill send a new pre_bid, if they can imrpove
                 
-                #TODO RENDER WHOEVER IS REJECTED
 
-                print("PHASE1:>>>>>>>>>>>>SENDING PRE   ACCEPTS<<<<<<<<<<<<<")
-                #Phase1#STEP 3 And 4 Evaluate Pre Bids and send Responses to Agents, Agents will react with DEF bids
-                for manager_sim in manager_release_time_list[time]:#simulate evermanger for time 
-                    print(">>>>>>>>>>>MANAGER ID :"+ str(manager_sim.id)+"TURN<<<<<<<<<<")
-                    if manager_sim.finished == False and manager_sim.phase == 1: # ALPHA IF
-                        manager_sim.send_pre_accepts()#after this, def bid is send automatically
-                #TODO RENDER WHOEVER IS ACCEPTED
                 #animation_render
          #wait 1 s for agents to answer 
-                animation.update_reactions()   
 
                 print(">>>>>>>>>>>>SETTING PHASES<<<<<<<<<<<<<")
                 #update phase status, check if there is a neew best bidder, if yes -> phase 1, if best bidder didint change ->phase 2 (sending DEF Rej/Acc)
@@ -136,6 +138,8 @@ def simulate(t,manager_release_time_list):
                     if manager_sim.finished == False:
                         manager_sim.set_phase()
                 #TODO Render phase reset or render going to phase 2 
+                animation.update_bids()#write a row for all bids
+                animation.update_reactions_after_set_phase()   
                 
 
                 print("PHASE2:>>>>>>>>>>>>SENDING DEF   REJECTS<<<<<<<<<<<<<")                    
@@ -154,12 +158,14 @@ def simulate(t,manager_release_time_list):
                     if manager_sim.finished == False and manager_sim.phase == 2: # ALPHA IF
                         manager_sim.send_def_accept()
                 #todo Render Def Rejects
-                animation.update_bids()#write a row for all bids
-                animation.update_reactions()   
- 
+               # animation.update_bids()#write a row for all bids
+                #animation.update_reactions()   
+                animation.update_def_bids()#write a row for all bids
+                animation.update_reactions()#write a row for all bids
+
 
                 i+=1 
-                input("press enter")    
+                input("PHASE RESET OR NEW TIME STEP INCOMMING")   
 
         print(">>>>>>>>>>>>>>>>>TIME :"+str(time_global)+" Simulating Steps For agents<<<<<<<<<<")
         #for agent_sim in Agent.instances:
@@ -187,32 +193,29 @@ def confirm_no_more_managers_to_simulate(time):
 
 #bulding agent: 
 #id, location, capacity ,speed, preferences[]
+test_agent0= Agent((0,0),1,100,[0,1,])#he manager likes 0 >1
+test_agent1= Agent((1,3),1,100,[0,1])# he manager likes 0>1
+#test_agent1= Agent((4,2),1,100,[1,0])# he manager likes 0>1
 
-
-test_agent0= Agent((0,0),1,100,(0,1))#he manager likes 0 >1
-#test_agent1= Agent(5,(3,3),15,20, [0])
-test_agent2= Agent((3,1),1,100,(0,1))# he manager likes 0>1
-#test_agent4= Agent(5,(6,6),15,20, [0]) 
-
-agent_list=[test_agent0,test_agent2]
-print ("PRE MANAGER CONSTRUCT")
+agent_list=[test_agent0,test_agent1]
 #manager_t= Encp_manager((5,5),agent_list)
 
-manager1=Encp_manager((1,0),agent_list)
+manager0=Encp_manager((0,1),agent_list)
+manager1=Encp_manager((3,1),agent_list)
+#manager3=Encp_manager((4,4),agent_list)
 
-manager2=Encp_manager((1,2),agent_list)
-#manager3=Encp_manager((6,6),agent_list)
+#manager2=Encp_manager((3,2),agent_list)
 
 #A list, whoose elements are Lists of Managers 
 #list [0] is a list of managers, who should be initated for Time 0
 #list [n] is list of managers, who should be initated at time N
 manager_release_time_list= []
-manager_release_time_list.insert(0,[])
-manager_release_time_list.insert(1,[])
+#manager_release_time_list.insert(0,[])
+manager_release_time_list.insert(1,[manager0,manager1])
 manager_release_time_list.insert(2,[])
 manager_release_time_list.insert(3,[])
 manager_release_time_list.insert(4,[])#Encp_manager((3,0),agent_list)
-manager_release_time_list.insert(5,[manager1,manager2])
+manager_release_time_list.insert(5,[])
 manager_release_time_list.insert(6,[])
 manager_release_time_list.insert(7,[])
 manager_release_time_list.insert(8,[])
@@ -223,10 +226,7 @@ manager_release_time_list.insert(11,[])
 animation = Encp_animation()
 
 #print ("relase time lsit :" + str(manager_release_time_list))
-simulate(10,manager_release_time_list)
-
-
-#task1= Task(5,(0,4))#should be won my agent 1
+simulate(10,manager_release_time_list)#task1= Task(5,(0,4))#should be won my agent 1
 
 #task2= Task(5,(3,0))#should be won by agent 2 
 #task3= Task(4,(7,7))#should be won by ag3
