@@ -33,3 +33,4 @@ animation = Encp_animation()
 
 #print ("relase time lsit :" + str(manager_release_time_list))
 simulate(10,manager_release_time_list)
+d
