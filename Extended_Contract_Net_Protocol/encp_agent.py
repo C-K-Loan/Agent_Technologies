@@ -97,18 +97,18 @@ class Agent():
 
     def get_scheduled_distance_to_new_manager(self, manager_new, pre_accepted=False):
         dist = 0
-        print("CALCULATING BIDS FOR NEW MANAGER")
+        print("AG-ID:"+str(self.id)+"CALCULATING BIDS FOR NEW MANAGER")
         
         
         if self.pre_path != []:
             dist+=self.calculate_distance(self.last_pre_location, self.pre_path[0].x)[1]
             dist+=self.dist_of_path(self.pre_path)
-
+            
         
         
-        print("PRE PATH SUM RETURNED: " + str(dist)+"and pre_path sum is"+ str(self.pre_path_sum))     
+        print("AG-ID:"+str(self.id)+"PRE PATH SUM RETURNED: " + str(dist)+"and pre_path sum is"+ str(self.pre_path_sum))     
         dist += self.calculate_distance(self.last_pre_location,manager_new.x)[1]
-        print("Calc Dist from" + str(self.last_pre_location)+"TO"+str(manager_new.x)+"DIST:"+ str(dist))     
+        print("AG-ID:"+str(self.id)+"Calc Dist from" + str(self.last_pre_location)+"TO"+str(manager_new.x)+"DIST:"+ str(dist))     
 
         dist += self.pre_path_sum    
         
@@ -117,7 +117,8 @@ class Agent():
         self.last_pre_location = manager_new.x
         self.tasks.append(manager_new)
         self.pre_path_sum = dist
-        
+        print("AG-ID:"+str(self.id)+"CALCULATED DISTANCE TO: " + str(manager_new.x )+"VALUE: " +str(dist))
+       
         return dist
 
 
@@ -125,28 +126,30 @@ class Agent():
         dist = 0
  
 
-        print("CALCULATING BIDS FOR KNOWn MANAGER")
+        print("AG-ID:"+str(self.id)+"CALCULATING BIDS FOR KNOWn MANAGER")
         dist+=self.def_path_sum
-        print("PRE PATH SUM IS:" + str(self.def_path_sum)+"and dist is"+str(dist))
+        print("AG-ID:"+str(self.id)+"PRE PATH SUM IS:" + str(self.def_path_sum)+"and dist is"+str(dist))
         dist += self.pre_path_sum    
       
-        print("PRE PATH SUM IS:" + str(self.pre_path_sum)+"and dist is"+str(dist))
+        print("AG-ID:"+str(self.id)+"PRE PATH SUM IS:" + str(self.pre_path_sum)+"and dist is"+str(dist))
         
         dist+=self.calculate_distance(self.last_pre_location, self.pre_path[0].x)[1]
 
-        print("Calculated dist" + str(self.pre_path_sum)+"and dist is"+str(dist))        
+        print("AG-ID:"+str(self.id)+"Calculated dist" + str(self.pre_path_sum)+"and dist is"+str(dist))        
         if len(self.pre_path)==1:
             self.pre_path_sum =dist
             self.last_pre_location = manager_new.x
             self.schedule[manager_new]= [dist,False]#update schedule with a list
+            self.pre_path_sum = dist
+
             return dist
         
 #        dist+=self.dist_of_path(self.pre_path)      
-   
-        self.last_pre_location = manager_new.x
+           
+        #self.last_pre_location = manager_new.x
         self.schedule[manager_new]= [dist,False]#update schedule with a list  
         self.pre_path_sum = dist
-
+        print("AG-ID:"+str(self.id)+"CALCULATED DISTANCE TO: " + str(manager_new.x )+"VALUE: " +str(dist))
         return dist
 
     def dist_of_path(self,path):#first is a tupel
@@ -194,7 +197,7 @@ class Agent():
 
         print("Ag-ID "+  str(self.id)+"Recieved pre Reject from Manager ID : "+ str(manager.id))
         new_bid = self.send_pre_bid(manager)#try to send a better bid
-        self.schedule[manager_new]= [dist,False]#update schedule with a list
+        self.schedule[manager]= [new_bid,False]#update schedule with a list
             
         if new_bid < self.schedule[manager][0]:
                 print("AG-ID:"+str(self.id)+"sending Imrpoved bid :"+ str(new_bid) + "old bid was: "+ str(self.schedule[manager][0]))
