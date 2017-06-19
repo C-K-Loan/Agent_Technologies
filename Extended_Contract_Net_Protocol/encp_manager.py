@@ -31,6 +31,17 @@ class Encp_manager():
         Encp_manager.instances.append(self)
         Encp_manager.id_counter += 1
         self.best_bid_changed= False #inital 0 for first enter in loop, if  this is >0, it means we have a imrpoved bidder
+        self.order = []
+        self.set_order()
+
+    def set_order(self):
+        interested_agents = []
+        for a in Agent.instances:
+            for i in range (10)
+                if self.id in a.preferences:
+                    if i <  len(a.preferences):
+                        if self.id == a.preferences[i]:
+                            self.order.append(a)
 
 
 
@@ -89,7 +100,7 @@ class Encp_manager():
 
     def get_pre_bids(self):
         print("M-ID:"+str(self.id)+"Collecting bids...")
-        for agent_it in Agent.instances: #ANNOUNCE TASK/Inform Every Agent and get Pre Bid (1) Task Announcement and (2) Recieving end of Pre Bid
+        for agent_it in self.order: #ANNOUNCE TASK/Inform Every Agent and get Pre Bid (1) Task Announcement and (2) Recieving end of Pre Bid
             self.bids[agent_it] = (agent_it.send_pre_bid(self), agent_it.id)#aka Call for proposals(cfp),Use Agent as Key and Bid as Value
             print("M-ID: "+str(self.id)+"Recieved bid :" + str(self.bids[agent_it][0]) + "from Agent ID:"+ str(self.bids[agent_it][1]))
             

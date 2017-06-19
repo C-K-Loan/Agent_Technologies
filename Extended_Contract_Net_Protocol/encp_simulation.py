@@ -93,10 +93,12 @@ def simulate(t,manager_release_time_list):
                 print(">>>>>>>>>>>>ITERATION : "+ str(i) + "FOR TIME "+ str(time)+"<<<<<<<<<<<<<")
                 #Phase 1STEP 2 collect Pre Bids
                 print("PHASE1:>>>>>>>>>>>>COLLECTING PRE BIDS STEP 2<<<<<<<<<<<<<")     
-                for manager_sim in manager_release_time_list[time]:#simulate evermanger for time 
-                    print(">>>>>>>>>>>MANAGER ID :"+ str(manager_sim.id)+"TURN<<<<<<<<<<")
-                    if manager_sim.finished == False and manager_sim.phase == 1: # ALPHA IF
-                        manager_sim.get_pre_bids()
+                for manager_sim in manager_release_time_list[time]:#simulate evermanger for time
+                    print(">>>>>>>>>>>MANAGER ID :" + str(manager_sim.id) + "TURN<<<<<<<<<<")
+                    manager_sim.set_order()
+                    for i in range(len(manager_sim.order) -1):
+                        if manager_sim.finished == False and manager_sim.phase == 1: # ALPHA IF
+                            manager_sim.get_pre_bids()
                 input("should render now")
                 animation.update_bids()
                 animation.mainloop()
