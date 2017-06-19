@@ -76,7 +76,7 @@ class Encp_manager():
             
             if(float(self.best_bid[0])> float(self.bids[agent_it][0])):
                 self.best_bid[0] = str(self.bids[agent_it][0])#actual value of the bid
-                self.best_bid[1] = str(self.bids[agent_it][1]) # id of the bidder
+                self.best_bid[1] = str(self.bids[agent_it][1]) # id
             else : 1+1
         print("M-ID :"+str(self.id)+"best Bid is:"+ str(self.best_bid[0] )+"with id :"+str(self.best_bid[1]))
             
@@ -148,9 +148,9 @@ class Encp_manager():
     #edge from 5 to 7 -> END of protocoll
     def send_def_reject(self):
         for agent_it in Agent.instances:
-            if(int(agent_it.id) ==int(self.best_bid[1])):
+            if(int(agent_it.id) !=int(self.best_bid[1])):
                 print("M-ID: "+str(self.id)+"sending DEF REJECT to agent ID : "+ str(agent_it.id) )
-                agent_it.recv_def_accept(self)
+                agent_it.recv_def_reject(self)
                 self.last_reaction_to_manager[agent_it]="Def Rejected Agent ID: "+ str(agent_it.id)
 """
 test_agent1= Agent(5,(0,0),15,20, [0])
