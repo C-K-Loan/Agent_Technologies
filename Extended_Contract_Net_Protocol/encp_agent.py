@@ -48,9 +48,12 @@ class Agent():
         self.def_path_sum = 0
         self.def_path = [] #of managers
         self.def_path_charge = 0
-        self.pre_accepted_tasks = []
-        self.tasks = []
 
+        self.pre_path = []
+        self.pre_path_sum = 0
+        self.tasks = []
+        last_def_location = self.location
+        last_pre_location = self.location
 
 
     def __str__(self):
@@ -120,6 +123,20 @@ class Agent():
         new_charge = c
         return (ret, new_charge)
 
+    def get_scheduled_distance_to1(self, manager_new, pre_accepted=False):
+        dist = 0
+        last_manager_added = 0
+        managers_calculated_count = 0
+        manager_already_in_schedule = False
+        bid_sum = 0
+        if self.def_path != []:
+            self.last_pre_location = self.def_path[-1].x
+
+
+        self.pre_path_sum += self.calculate_distance(last_location)
+        self.pre_path.append(manager_new)
+        self.last_pre_location = manager_new.x
+
 
     def get_scheduled_distance_to(self, manager_new, pre_accepted = False):
         dist=0
@@ -131,9 +148,9 @@ class Agent():
         if self.def_path != []:
             last_location =self.def_path[-1].x
 
-        if last_location == manager_new.x | self.location ==manager_new.x:
+        #if last_location == manager_new.x | self.location ==manager_new.x:
 
-            return 0
+         #   return 0
 
         if pre_accepted :
             manager_already_in_schedule = True #setup help var
@@ -141,7 +158,6 @@ class Agent():
             raw_dist = self.calculate_distance(last_location, manager_new.x)[1]
             #self.schedule[manager_new][1] = True
             self.def_path.append(manager_new)
-            self.def_path_sum += dist
             self.pre_accepted_tasks.remove(manager_new)
             self.def_path_charge = self.plan_charge(self.def_path_charge, raw_dist)
             return self.def_path_sum
@@ -158,10 +174,10 @@ class Agent():
           #return dist
 
         #manager is not yet in schedule and schedule len >= 1
+        self.def_path_sum =
 
-
-          dist +=self.sum_def_path(manager_new,manager_already_in_schedule) #TODO UPDATE self location
-          print("AG-ID:"+str(self.id)+ "Def Path calculation Returned:"+ str(dist))
+            dist +=self.sum_def_path(manager_new,manager_already_in_schedule) #TODO UPDATE self location
+            print("AG-ID:"+str(self.id)+ "Def Path calculation Returned:"+ str(dist))
 
 
 
@@ -189,12 +205,12 @@ class Agent():
 
         return dist
 
-
-
 ##edge from step 1 to 2,
     def send_pre_bid(self,manager):
         print("AG-ID:"+str(self.id)+"<______IN PRE BID FOR_________MANAGER  ID: "+str(manager.id))
-        new_pre_bid = self.get_scheduled_distance_to(manager)
+        new_pre_bid = self.get_scheduled_distance_to1(manager)
+
+
 
 
         if manager in self.schedule:#reject previously
