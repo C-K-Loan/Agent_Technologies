@@ -115,7 +115,6 @@ def simulate(t,manager_release_time_list):
                     print(">>>>>>>>>>>MANAGER ID :"+ str(manager_sim.id)+"TURN<<<<<<<<<<")
                     if manager_sim.finished == False and manager_sim.phase == 1: # ALPHA IF
                         manager_sim.send_pre_rejects()#after this, everyone who is rejected whill send a new pre_bid, if they can imrpove
-                animation.update_reactions()#special case, empty brackets   
                 
                 #TODO RENDER WHOEVER IS REJECTED
 
@@ -128,7 +127,6 @@ def simulate(t,manager_release_time_list):
                 #TODO RENDER WHOEVER IS ACCEPTED
                 #animation_render
          #wait 1 s for agents to answer 
-                animation.update_bids()#incase we have improved bids since last reject /this is either PRe /Def bids
                 animation.update_reactions()   
 
                 print(">>>>>>>>>>>>SETTING PHASES<<<<<<<<<<<<<")
@@ -156,14 +154,16 @@ def simulate(t,manager_release_time_list):
                     if manager_sim.finished == False and manager_sim.phase == 2: # ALPHA IF
                         manager_sim.send_def_accept()
                 #todo Render Def Rejects
-
+                animation.update_bids()#write a row for all bids
+                animation.update_reactions()   
+ 
 
                 i+=1 
                 input("press enter")    
 
         print(">>>>>>>>>>>>>>>>>TIME :"+str(time_global)+" Simulating Steps For agents<<<<<<<<<<")
-        for agent_sim in Agent.instances:
-            agent_sim.move()
+        #for agent_sim in Agent.instances:
+       #     agent_sim.move()
         time_global += 1
     animation.mainloop()
 
