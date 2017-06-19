@@ -1,240 +1,209 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Thu May 25 23:29:11 2017
+Created on Sun Jun  4 23:30:59 2017
 
-@author: Komat
+@author: loan
 """
+
 import numpy as np
 import math
-import networkx as nx
 import encp_agent as agent
 from encp_agent import Agent
-from encp_manager import Encp_manager
-from encp_animation import Encp_animation
-import encp_manager as manager
-import encp_animation as anim
-
-w = 5
-h = 5
-global time_global
-
-
-#@ Param Agents List of Tupels with Agent Parameters 
-#@ Param width, height world size
-#@ aram
-def init_world( width = w, height= h):
-    global world
-    #create gridworld
-    world = nx.grid_2d_graph( width, height)
-
-    #create Agents from Agents List
-    #for i in range (agents):
-     #   Agent(agents[i])
-
-            
-class Task():
-#represents a task/job, for location and time(whic his announce time)     
+class Encp_manager():
 
     instances = []
     id_counter = 0
-    #create a job
-    #@param t = time, WHEN the task is released/created
-    #@param x = Location, where is the task
+    
 
-    def __init__(self, t, x):
-        self.t = t
-        self.x = x
-        self.id = Task.id_counter
-        Task.id_counter +=1
-        #Status
-        self.done = False
-         
-
-
-# vergibt tasks
-#an initiator, will initiate the encp Manager instance, of A location with announce_task(), when time is right        
-class Initiator():
-
-    instances = []
-    id_counter = 0
-    phase = 1
-
-    def __init__(self, task):
-        self.id = Initiator.id_counter
-        self.task = task
-        Initiator.id_counter +=1
-        Initiator.instances.append(self)
-
-    #announce Task , Create ENCP instance for that task
-    def announce_task(self):
-        if self.task.t == time_global: #only Release Task when world is at that time
-            
-            print("TASK FOR " + str(self.task.x)+"initiated!")
-            manager_t = Encp_manager(self.task.x,agent_list)
-            print ("IN SIMULATION")
-            manager_t.manage()
-            print(" OUT MANAGE")
-
-        else:
-            print("Time for Task has not yet come, expected: " + str(self.task.t)+ "time is" + str (time_global))
-         #   print ("World time is " + str(time_global) )
+    #@param agents, a list of all created agents in the world    
+    #@param location, which location will be managed by this manager
+    def __init__(self, location, agents):
+        self.best_bid = [math.inf,None ]#best_bid(0) is value of Best bid, best_bid(1) is that corrosponding bidding Agent
+        self.bids = {}# Dictionary for Key:Agent Value:Tuple (BID,ID of agent)
+        self.x = location#which field does the ENCP manager manage
+        self.phase = 1#inital phase 1 of 2 
+        self.id = Encp_manager.id_counter
+        self.phase = 1
+        self.last_reaction_to_manager= {}
+        self.finished = False
+        #self.pre_bid_rounds = 0
+        #self.agent_L = agents
+        Encp_manager.instances.append(self)
+        Encp_manager.id_counter += 1
+        self.best_bid_changed= False #inital 0 for first enter in loop, if  this is >0, it means we have a imrpoved bidder
+        self.order = []
+        self.set_order()
+        self.reactions = ""
 
 
-def simulate(t,manager_release_time_list):
-    global time_global
-    time_global = 0
-    i = 0
-    #every time iteration, tasks get announced and if the time is right, Encp manager will be created
-    for time in range(t):
-        i = 0
-        if (manager_release_time_list[time]!= []):# if list is not empty at position, then there are managers to simulate
-            while(confirm_no_more_managers_to_simulate(time) == False):#Only simulate, if managers for that time are unfinished
-                   
-                print("|||||||||||||||||||||ITERATION : "+ str(i) + "FOR TIME "+ str(time)+"||||||||||||||")
-                #Phase 1STEP 2 collect Pre Bids
-                print("PHASE1:>>>>>>>>>>>>COLLECTING PRE BIDS STEP 2<<<<<<<<<<<<<")     
-                for manager_sim in manager_release_time_list[time]:#simulate evermanger for time 
-                    print(">>>>>>>>>>>MANAGER ID :"+ str(manager_sim.id)+"TURN<<<<<<<<<<")
-                    if manager_sim.finished == False and manager_sim.phase == 1: # ALPHA IF
-                        manager_sim.get_pre_bids()
-                animation.update_bids()#write a row for all bids
-                animation.update_reactions()   
-                
-                
-                print("PHASE1:>>>>>>>>>>>>EVALUATING BIDS....<<<<<<<<<<<<<")
-                #Phase1#STEP 3 And 4 Evaluate Pre Bids and send Responses to Agents, Agents will react with DEF bids
-                for manager_sim in manager_release_time_list[time]:#simulate evermanger for time 
-                    print(">>>>>>>>>>>MANAGER ID :"+ str(manager_sim.id)+"TURN<<<<<<<<<<")
-                    if manager_sim.finished == False and manager_sim.phase == 1: # ALPHA IF
-                        manager_sim.find_and_set_best_bidder()                        
-                #animation.update_bids()
+    def set_order(self):
+        interested_agents = []
+        for a in Agent.instances:
+            for i in range (10):
+                if self.id in a.preferences:
+                    if i <  len(a.preferences):
+                        if self.id == a.preferences[i]:
+                            self.order.append(a)
 
 
-                print("PHASE1:>>>>>>>>>>>>SENDING PRE   ACCEPTS<<<<<<<<<<<<<")
-                #Phase1#STEP 3 And 4 Evaluate Pre Bids and send Responses to Agents, Agents will react with DEF bids
-                for manager_sim in manager_release_time_list[time]:#simulate evermanger for time 
-                    print(">>>>>>>>>>>MANAGER ID :"+ str(manager_sim.id)+"TURN<<<<<<<<<<")
-                    if manager_sim.finished == False and manager_sim.phase == 1: # ALPHA IF
-                        manager_sim.send_pre_accepts()#after this, def bid is send automatically
- 
-                
-                print("PHASE1:>>>>>>>>>>>>SENDING PRE REJECTS <<<<<<<<<<<<<")
-                #Phase1#STEP 3 And 4 Evaluate Pre Bids and send Responses to Agents, Agents will react with DEF bids
-                for manager_sim in manager_release_time_list[time]:#simulate evermanger for time 
-                    print(">>>>>>>>>>>MANAGER ID :"+ str(manager_sim.id)+"TURN<<<<<<<<<<")
-                    if manager_sim.finished == False and manager_sim.phase == 1: # ALPHA IF
-                        manager_sim.send_pre_rejects()#after this, everyone who is rejected whill send a new pre_bid, if they can imrpove
-                
-                #animation_render
-         #wait 1 s for agents to answer 
-                animation.update_reactions()   
 
-                print(">>>>>>>>>>>>SETTING PHASES<<<<<<<<<<<<<")
-                #update phase status, check if there is a neew best bidder, if yes -> phase 1, if best bidder didint change ->phase 2 (sending DEF Rej/Acc)
-                for manager_sim in manager_release_time_list[time]:
-                    print(">>>>>>>>>>>MANAGER ID :"+ str(manager_sim.id)+"TURN<<<<<<<<<<")
-                    if manager_sim.finished == False:
-                        manager_sim.set_phase()
-                #TODO Render phase reset or render going to phase 2 
-                
 
-                print("PHASE2:>>>>>>>>>>>>SENDING DEF   REJECTS<<<<<<<<<<<<<")                    
-                #Phase 2 STEP 3 Agents havesend Def bids by now, if best_bidder didint changed manager sends def Accepts and Def Rejects 
-                for manager_sim in manager_release_time_list[time]:#simulate evermanger for time 
-                    print(">>>>>>>>>>>MANAGER ID :"+ str(manager_sim.id)+"TURN<<<<<<<<<<")
-                    if manager_sim.finished == False and manager_sim.phase == 2: # ALPHA IF
-                        manager_sim.send_def_reject()
 
-                #todo Render Def Rejects
 
-                print("PHASE2:>>>>>>>>>>>>SENDING DEF ACCEPTS  <<<<<<<<<<<<<")                    
-                #Phase 2 STEP 3 Agents havesend Def bids by now, if best_bidder didint changed manager sends def Accepts and Def Rejects 
-                for manager_sim in manager_release_time_list[time]:#simulate evermanger for time 
-                    print(">>>>>>>>>>>MANAGER ID :"+ str(manager_sim.id)+"TURN<<<<<<<<<<")
-                    if manager_sim.finished == False and manager_sim.phase == 2: # ALPHA IF
-                        manager_sim.send_def_accept()
-                #todo Render Def Rejects
-                animation.update_bids()#write a row for all bids
-                animation.update_reactions()   
- 
+    def set_phase(self):
 
-                i+=1 
-                input("PHASE RESET OR NEW TIME STEP INCOMMING")   
-
-        print(">>>>>>>>>>>>>>>>>TIME :"+str(time_global)+" Simulating Steps For agents<<<<<<<<<<")
-        #for agent_sim in Agent.instances:
-       #     agent_sim.move()
-        time_global += 1
-    animation.mainloop()
-
-                
+        if self.best_bid_changed == True:
+            print ("M-ID:"+str(self.id)+  "SETTING PHASE BACK TO 1 ")
+            self.phase = 1
+        else :
+            print("M-ID:"+str(self.id)+"SETTING PHASE TO 2")
+            self.phase = 2
     
 
 
+    def get_pre_bids(self):
+        print("M-ID:"+str(self.id)+"Collecting bids...")
+        for agent_it in Agent.instances: #ANNOUNCE TASK/Inform Every Agent and get Pre Bid (1) Task Announcement and (2) Recieving end of Pre Bid
+            self.bids[agent_it] = (agent_it.send_pre_bid(self), agent_it.id)#aka Call for proposals(cfp),Use Agent as Key and Bid as Value
+            print("M-ID: "+str(self.id)+"Recieved bid: " + str(self.bids[agent_it][0]) + "    from Agent ID:"+ str(self.bids[agent_it][1]))
+            
+        self.find_and_set_best_bidder()
+        
+    #set the best bidder variable 
+    def find_and_set_best_bidder(self):
+        for agent_it in Agent.instances:#find best bidder, send him Pre Accept, Pre Reject to the rest
+            
+            if(float(self.best_bid[0])> float(self.bids[agent_it][0])):
+                self.best_bid[0] = str(self.bids[agent_it][0])#actual value of the bid
+                self.best_bid[1] = str(self.bids[agent_it][1]) # id
+            else : 1+1
+        print("M-ID :"+str(self.id)+"best Bid is:"+ str(self.best_bid[0] )+"with id :"+str(self.best_bid[1]))
+            
+        
+    #Inteface for agents, so they can bid, Should only be called by agent, if they can actually offer a better bid
+    def recv_pre_bid(self,agent_sender,bid):
+        print("M-ID :"+str(self.id)+ "  recv pre bid from ID:" +str(agent_sender.id)+ "value:" + str(bid)+"old best bid was"+str(self.best_bid[0]))
+        if(int(self.best_bid[0])> int(bid)):
+            print("M-ID :"+str(self.id)+ " NEW BEST BIDDER; old AGENT WAS OVERBID!, sending pre Accept to him and pre rej to old best bidder old was" +str(int(self.best_bid[0]))+ "new is" + str(int(bid)))            
+            self.send_pre_reject_to_best_bidder()
+            self.best_bid[0]= bid
+            self.best_bid[1]= agent_sender.id
+            self.last_reaction_to_manager[agent_sender]="Pre Accepted: Agent ID: "+ str(agent_sender.id)
+            agent_sender.recv_pre_accept(self)
+            self.best_bid_changed= True
+        else:
 
-#confirm if there are managers to simulate for time t
-#return FALSE,if there are unfinished managers for time T
-#return TRUE, if every manager for time T  is finished (def acc/rej send)
-def confirm_no_more_managers_to_simulate(time):
-    result = True
-    for manager in manager_release_time_list[time]:
-        if manager.finished == False:
-            result = False
-    return result
+            print("M-ID :"+str(self.id)+ " Bidder Agent ID: "+str(agent_sender.id)+" did not improve,do nothing or def reject?" +str(int(self.best_bid[0])) +"new is" + str(int(bid)))
+            agent_sender.recv_def_reject(self)
+            self.last_reaction_to_manager[agent_sender]="Def Rejected Agent ID: "+ str(agent_sender.id)
+            self.best_bid_changed= False
+            
+
+
+
+    #send a pre reject to current best bidder
+    def send_pre_reject_to_best_bidder(self):
+        for agent_it in Agent.instances:
+            if int(agent_it.id) == int(self.best_bid[1]):
+                self.last_reaction_to_manager[agent_it]="Pre Rejected,(after previous Accept) Agent ID: "+ str(agent_sender.id)                
+                #self.bids[agent_it]+=("Pre Rejected Agent ID: :"+ str(agent_it.id),)
+                agent_it.recv_pre_reject(self)
+                
+    #edge from step 2 to 4 , Send pre reject to every agent, who is not best bidder
+    def send_pre_rejects(self):
+        for agent_it in Agent.instances:
+            if(int(agent_it.id) !=int(self.best_bid[1])):
+                print("M-ID: "+str(self.id)+"sending pre reject to agent ID : "+ str(agent_it.id) )
+                self.last_reaction_to_manager[agent_it]="Pre Rejected Agent ID: :"+ str(agent_it.id)             
+                agent_it.recv_pre_reject(self)
+
+    #edge from 2 to 4 
+    #send pre accept to best bidder
+    def send_pre_accepts(self):
+        for agent_it in Agent.instances:
+            if(int(agent_it.id) ==int(self.best_bid[1])):
+                print("M-ID: "+str(self.id)+"sending pre Acc to agent ID : "+ str(agent_it.id) )
+                self.last_reaction_to_manager[agent_it]="Pre Accepted Agent ID: :"+ str(agent_it.id)
+                agent_it.recv_pre_accept(self)
+ 
+    
+    
+    
+    #Edge from 3 to 5| @ param agent, agent that sends the def bid, this will recieve best_bid and then ask all agents for 
+    def recv_def_bid(self,agent_sender,def_bid):
+        print("M-ID: "+str(self.id)+"recieved def_bid!, Val:"+str(def_bid)+"from agent ID: " + str(agent_sender.id))
+        if int(self.best_bid[0])<= def_bid:
+            self.best_bid[0] = def_bid
         
     
+    #edge from 5 to 6 -> END OF protocoll, manager stops managing after this
+    def send_def_accept(self):
+        for agent_it in Agent.instances:
+            if(int(agent_it.id) == int(self.best_bid[1])):
+                print("M-ID: "+str(self.id)+"sending DEF ACCEPT to agent ID : "+ str(agent_it.id) )
+                self.last_reaction_to_manager[agent_it]="Def Accepted Agent ID: "+ str(agent_it.id)+" Manger is ID: "+ str(self.id) + " now finished"
+                agent_it.recv_def_accept(self)
+        self.finished= True# this agent will stop working
+
+    #edge from 5 to 7 -> END of protocoll
+    def send_def_reject(self):
+        for agent_it in Agent.instances:
+            if(int(agent_it.id) !=int(self.best_bid[1])):
+                print("M-ID: "+str(self.id)+"sending DEF REJECT to agent ID : "+ str(agent_it.id) )
+                agent_it.recv_def_reject(self)
+                self.last_reaction_to_manager[agent_it]="Def Rejected Agent ID: "+ str(agent_it.id)
+"""
+test_agent1= Agent(5,(0,0),15,20, [0])
+test_agent2= Agent(5,(3,3),15,20, [0])
+test_agent3= Agent(5,(1,1),15,20, [0])
+test_agent4= Agent(5,(4,4),15,20, [0])
+
+agent_list=[test_agent1,test_agent2,test_agent3,test_agent4]
+manager_t= Encp_manager((5,5),agent_list)
+#manager_t.recv_pre_bids()
+manager_t.manage()
+#print(test_agent1.get_distance_to((5,5)))
+
+    def manage(self):
+    #function that manages ai/acting of manager
+    #inital call of this method, to start manager 
+    #once Task is managed, encp_manager instance will terminate through this method, free ressources?
+   #    for rounds in self.pre_bid_rounds#repeat for N pre bidding rounds
+        print("MANAGER WITH ID : >>>>>>>>>>>>"+str(self.id)+"<<<<<<STARTING!!!")            
+        self.get_pre_bids()#collect al inital pre bids
+        print("M-"+str(self.id)+"P1_____________DONE WITH FIRST COLLECTION OF BIDS______")
+        
+        self.send_pre_accepts()#send pre accet to agent, who is best_bid[0]    
+        print("M-"+str(self.id)+"P1_____________DONE WITH FIRST PRE ACCEPT________________________")#if best_bider changed, go to beginning of p1.2
+
+        self.send_pre_rejects()#send reject to every agent, who is not best_bid[0], they will answer withnwe bids, if bid is not better than best_bid[0]-> send defenitive bid()
+        print("M-"+str(self.id)+"P1.3_____________DONE WITH SENDING FIRST WAVE OF PRE REJECTS______")
+
+        if self.best_bid_changed == True :
+           self.reset_phase1()
+        else: 1+1
+        print("P2 _____NOBODY IMPROVED, STARTING PHASE 2____________")
+        self.send_def_reject()
+        print("M-"+str(self.id)+"_____DONE WITH SENDING DEF REJECTS!_____")
+        self.send_def_accept()
+        print("M-"+str(self.id)+"_____DONE WITH SENDING DEF ACCEPTS!_____")
+        
 
 
-#bulding agent: 
-#id, location, capacity ,speed, preferences[]
+        
+    #todo, not really implemented
+    def reset_phase1(self):
+        print("________RESETTING PHASE 1_________")
+        self.send_pre_accepts()#send pre accet to agent, who is best_bid[0]    
+        print("P1_____________DONE WITH FIRST PRE ACCEPT________________________")#if best_bider changed, go to beginning of p1.2
 
-
-test_agent0= Agent((0,1),1,100,[0,1])#he manager likes 0 >1
-#test_agent1= Agent(5,(3,3),15,20, [0])
-test_agent2= Agent((4,1),1,100,[0,1])# he manager likes 0>1
-#test_agent4= Agent(5,(6,6),15,20, [0]) 
-
-agent_list=[test_agent0,test_agent2]
-print ("PRE MANAGER CONSTRUCT")
-#manager_t= Encp_manager((5,5),agent_list)
-
-manager1=Encp_manager((1,0),agent_list)
-
-manager2=Encp_manager((3,2),agent_list)
-#manager3=Encp_manager((6,6),agent_list)
-
-#A list, whoose elements are Lists of Managers 
-#list [0] is a list of managers, who should be initated for Time 0
-#list [n] is list of managers, who should be initated at time N
-manager_release_time_list= []
-manager_release_time_list.insert(0,[])
-manager_release_time_list.insert(1,[])
-manager_release_time_list.insert(2,[])
-manager_release_time_list.insert(3,[])
-manager_release_time_list.insert(4,[])#Encp_manager((3,0),agent_list)
-manager_release_time_list.insert(5,[manager1,manager2])
-manager_release_time_list.insert(6,[])
-manager_release_time_list.insert(7,[])
-manager_release_time_list.insert(8,[])
-manager_release_time_list.insert(9,[])
-manager_release_time_list.insert(10,[])
-manager_release_time_list.insert(11,[])
-
-animation = Encp_animation()
-
-#print ("relase time lsit :" + str(manager_release_time_list))
-simulate(10,manager_release_time_list)
-
-
-#task1= Task(5,(0,4))#should be won my agent 1
-
-#task2= Task(5,(3,0))#should be won by agent 2 
-#task3= Task(4,(7,7))#should be won by ag3
-#test_agent= agent.Agent(5,(0,0),15,20, [0])
-#initiator1 = Initiator(task1)
-#initiator2 = Initiator(task2)
-#initiator3 = Initiator(task3)
-
-#init_world(5,5)
-
-#test_manager.recv_pre_bids()
+        self.send_pre_rejects()#send reject to every agent, who is not best_bid[0], they will answer withnwe bids, if bid is not better than best_bid[0]-> send defenitive bid()
+        print("P1.3_____________DONE WITH SENDING FIRST WAVE OF PRE REJECTS______")
+        if self.best_bid_changed == True :
+           self.reset_phase1()#rekursiv weiter aufrufen, bis es keine verbesserung gibt
+        #PASTE REST OF MANAGE FUNCTION IN RESET
+    
+    #edge from 1 to 2, collect all pre bids, ask all agents for their bids
+    #set bestbidder with function call
+"""
