@@ -4,17 +4,16 @@ import numpy as np
 import math
 from I_Bundle_Agent import Agent
 from I_Bundle_Auction import Auction
+#import I_Bundle_Render as render
 
 
 
 
 
-
-#A bundle Containing a quantity of locations/Jobs, all of one Type  
-#@param bundle_type, type of bundle
-#@param locations, the locations for this bundke
-#@param value, the value of this bundle
 class Bundle():
+#A bundle Containing a quantity of locations/Jobs, all of one Type  
+#@param bundle_type, type of bundle,@param locations, the locations for this bundke,@param value, the value of this bundle
+
     instances = []
     id_counter = 0
 
@@ -36,6 +35,7 @@ class Bundle():
    
     
 class Job():
+    #location in the World, with value and Type
     instances = []
     id_counter = 0
 
@@ -64,15 +64,10 @@ class Job():
 #initialize all objects
 def init_world():
     #location, Capacity    
-    test_agent0= Agent((0,0),1)
-
-
-    test_auction0= Auction()#he manager likes 0 >1
-
-    test_agent0.hello_agent()
-    test_auction0.hello_auction()
-    test_auction0.recv_test_agent(test_agent0)
-
+    agent0= Agent((0,0),1) 
+    agent1= Agent((4,4),1)
+    
+    
     #job Location, Value, type
     cat0 = Job((0,4),10,"Cat")
     cat1 = Job((1,3),10,"Cat")
@@ -87,8 +82,11 @@ def init_world():
 
 
     bundle_list = [bundle_0,bundle_1,bundle_2,bundle_3]
-    print_bundle(bundle_list)
-
+    agent_list = [agent0,agent1]
+    auction= Auction(bundle_list,agent_list)    
+    auction.start_auction()
+    
+    
 def print_bundle(bundle_list):
     for bundle in bundle_list:
         bundle_str = str(bundle.name)
