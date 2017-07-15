@@ -65,13 +65,14 @@ class Job():
 def init_world():
     #location, Capacity    
     agent0= Agent((0,0),1) 
-    agent1= Agent((4,4),1)
+    agent1= Agent((6,0),1)
+    agent2= Agent((1,5),1)
     
     
     #job Location, Value, type
-    cat0 = Job((0,4),10,"Cat")
-    cat1 = Job((1,3),10,"Cat")
-    dog0 = Job((4,0),10,"Dog")
+    cat0 = Job((1,3),15,"Cat")
+    cat1 = Job((2,2),10,"Cat")
+    dog0 = Job((5,5),20,"Dog")
 
     #bundle Name, type, Jobs in bundle
     bundle_0 = Bundle( "Cat 0","Cat",[cat0])
@@ -82,7 +83,7 @@ def init_world():
 
 
     bundle_list = [bundle_0,bundle_1,bundle_2,bundle_3]
-    agent_list = [agent0,agent1]
+    agent_list = [agent0,agent1,agent2]
     auction= Auction(bundle_list,agent_list)    
     auction.start_auction()
     
