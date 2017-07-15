@@ -12,9 +12,10 @@ class Agent():
         self.max_capacity = k
         Agent.instances.append(self)
         Agent.id_counter += 1
-        self.use_vector = {}#use Vecotr for all bundles
+        self.use_vector = {}#Key= Bundle, Value  = Use For That Bunlde (Bundle_Value - (Bundle Price+bundle_travel_distance))
+        self.distance_vector = {}# A Dictonary with Keys = bundles, Value is Distance Agent has to Travel to Pick up all Jobs in that Bundle
         self.won_last_auction=False #implies if won last auction
-
+        self.distance_vector_calculated= False 
 
     def hello_agent(self):
         print("Hello from Agent!")
@@ -22,22 +23,40 @@ class Agent():
         
     def recv_price_list(self,new_bundle_price_list):
         #recieve a new price list and formulate a new bid if possible or do nothing
-        print("recieved price list!")
-        #print(str(new_price_list))
-        for bundle in new_bundle_price_list:
-            print("AG-ID:" +str(self.id) + "  Bundle ["+ str(bundle.name) +  "]and price " +str (new_bundle_price_list[bundle]))
         
-        self.update_use_vecotr(new_bundle_price_list)
-        print("AG-ID:" +str(self.id) + " updated Use Vector to " + self.print_use_vector())
+        print("recieved price list!")
+        if self.distance_vector_calculated == False :
+            
+            self.calculate_distance_vector(new_bundle_price_list)
+        
+        #print(str(new_price_list))
+        #for bundle in new_bundle_price_list:
+        #    print("AG-ID:" +str(self.id) + "  Bundle ["+ str(bundle.name) +  "]and price " +str (new_bundle_price_list[bundle]))
+        
+        #self.update_use_vecotr(new_bundle_price_list)
+        print("AG-ID:" +str(self.id) + " updated Distance Vector to " + self.print_distance_vector())
  
-1
+
+    def calculate_distance_vector(self,bundle_price_list):
+        for bundle in bundle_price_list:
+            #print("AG-ID:" +str(self.id) + "update use Vector for bundle:" + bundle.name)
+            self.distance_vector[bundle]=self.calc_bundle_distance(bundle)
+        self.distance_vector_calculated = True
+        
 
     def print_use_vector(self):
         print_string =""
         for bundle in self.use_vector:#key are bundles
             print_string+= str(bundle.name) + " U: " + str(self.use_vector[bundle] )+ "|"#values are the calculated Use Value for that key/bunde
         return print_string
-    
+
+
+    def print_distance_vector(self):
+        print_string =""
+        for bundle in self.distance_vector:#key are bundles
+            print_string+= str(bundle.name) + " Distance: " + str(self.distance_vector[bundle] )+ "|"#values are the calculated Use Value for that key/bunde
+        return print_string
+        
     
     def calc_bid(self,bundle_price_list):  
         1+1
@@ -46,10 +65,8 @@ class Agent():
         
         
     def update_use_vecotr(self,bundle_price_list):#U, NutzenVektor für den Agenten, wenn er ein Bundle zum gegeben Preis kauft, update use Vector für neue Preise 
-        for bundle in bundle_price_list:
-            #print("AG-ID:" +str(self.id) + "update use Vector for bundle:" + bundle.name)
-            self.use_vector[bundle]=self.calc_bundle_distance(bundle)
-
+                         #TODO  Bundle Value - Distance To Bundle 
+                         1+1
 
 
     def calc_bundle_distance(self,bundle_new):
@@ -70,17 +87,10 @@ class Agent():
                 
         return result
         
-        
       
     def calculate_distance(self,a,b):
         # calculate using  |x1-x2| + |y1-y2| , for location a to location b (tuples (x,y))
-
-        
-        
-        
         dist = abs(a[0] - b[0] )+ abs(a[1] -b[1])
-        
-
         return dist
     
 
