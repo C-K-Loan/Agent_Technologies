@@ -30,7 +30,7 @@ class Agent():
         self.update_use_vecotr(new_bundle_price_list)
         print("AG-ID:" +str(self.id) + " updated Use Vector to " + self.print_use_vector())
  
-
+1
 
     def print_use_vector(self):
         print_string =""
