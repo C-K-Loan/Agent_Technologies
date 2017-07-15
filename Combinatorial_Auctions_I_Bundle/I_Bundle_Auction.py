@@ -42,4 +42,3 @@ class Auction():
         self.price_list = {}
         for bundle in self.bundle_list:
             self.price_list[bundle]= 0
-        
