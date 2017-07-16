@@ -27,6 +27,8 @@ class Agent():
         
     def recv_price_list(self,new_bundle_price_list,auctioneer):
         #recieve a new price list and formulate a new bid if possible or do nothing
+        if self.won_last_auction == True:
+            self.repeat_bid()#todo
         print("recieved price list!")
         if self.distance_vector_calculated == False :
             
@@ -37,7 +39,7 @@ class Agent():
         self.update_use_vecotr(new_bundle_price_list)
         #print("AG-ID:" +str(self.id) + " updated Use Vector to " + self.print_use_vector())        
    
-        bid_list = self.decide_on_bid()
+        bid_list = self.decide_on_bid(new_bundle_price_list)
         print("AG-ID:" +str(self.id) +"Sending bid for bundle:" + str(bid_list[0].name) + "which has  use " + str(self.use_vector[bid_list[0]]))     
 
         self.send_bid_list(bid_list,auctioneer)#TODO if there are no Profitable bids, send Stop bidding Signal to aucitoneer
@@ -48,12 +50,16 @@ class Agent():
         #self.update_use_vecotr(new_bundle_price_list)
  
 
+    def repeat_bid(self ):
+        1+1
+        
     def send_bid_list(self,bid_list,auctioneer):
         for bid in bid_list:
             auctioneer.recv_bid_list(bid_list,auctioneer)
             
 
-    def decide_on_bid(self):
+
+    def decide_on_bid(self,price_list):
         bid_list = []#list of most profitable bundles, [0] most profitable,[1] 2nd most profitable
         best_use = [-(math.inf),"default"]# set to 0, if we only want to bid on things with profit >1, second element is the the bundle 
         
@@ -62,7 +68,7 @@ class Agent():
                 if self.use_vector[bundle] > best_use[0] and bundle not in bid_list:
                     best_use[0] = self.use_vector[bundle]
                     best_use[1] = bundle
-            bid_list.append(best_use[1])        
+            bid_list.append([best_use[1], price_list[bundle]])        
                     
         return bid_list        
 
