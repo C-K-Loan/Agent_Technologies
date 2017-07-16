@@ -42,11 +42,11 @@ class Auction():
         print("AUCTION: Recieved bid "+ str(bid_list[0][0].name) + "from agent" + str(agent.id) + "for price" + str(bid_list[0][1]))
         if self.bids_recieved == len(self.agent_list):
             print("recieved all bids , decidin..")
-
+            self.find_revenue_maximizing_distribution()
             
     def find_revenue_maximizing_distribution(self):
         #calc all possible combinations, check  revenue for all and pick most profitable and distribute evenly
-        
+        self.find_winners()
 
 
     def print_bid_list(self,bid_list):
@@ -64,4 +64,14 @@ class Auction():
             self.price_list[bundle]= 0
 
     def update_price_list(self):
+        pass
+    def find_winners(self):
+        for bundle in self.bundle_list:
+            print("bundle: " +  bundle.name)
+
+    def compatible_bundle(self, b1, b2):
+        if b1 in b2 || b2 in b1
+
+    def create_subsets(self):
+        #alle möglichen kombinationen rausfinden und dann die kicken, die nicht kompatibel sind.
         pass
