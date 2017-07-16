@@ -40,7 +40,7 @@ class Agent():
         bid_list = self.decide_on_bid()
         print("AG-ID:" +str(self.id) +"Sending bid for bundle:" + str(bid_list[0].name) + "which has  use " + str(self.use_vector[bid_list[0]]))     
 
-        self.send_bid_list(bid_list,auctioneer)
+        self.send_bid_list(bid_list,auctioneer)#TODO if there are no Profitable bids, send Stop bidding Signal to aucitoneer
         #print(str(new_price_list))
         #for bundle in new_bundle_price_list:
         #    print("AG-ID:" +str(self.id) + "  Bundle ["+ str(bundle.name) +  "]and price " +str (new_bundle_price_list[bundle]))
@@ -50,7 +50,7 @@ class Agent():
 
     def send_bid_list(self,bid_list,auctioneer):
         for bid in bid_list:
-            auctioneer.recv_bid_list(bid_list,self)
+            auctioneer.recv_bid_list(bid_list,auctioneer)
             
 
     def decide_on_bid(self):
