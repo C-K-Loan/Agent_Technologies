@@ -30,23 +30,23 @@ class Auction():
         
         
 
-       
+
     def hello_auction(self):
         print("Hello from Auction!")
         
 
-    def recv_bid_list(agent,bid_list,self):
+    def recv_bid_list(self, agent,bid_list):
         self.bids_recieved += 1 
         #recviece the bids of an agent and safe the bids until we have all bids recieved or Timeout
         self.agents_bid_list[agent] = bid_list# for Every Agent entry in DIct, there is a List of his XOR bids
-        print("AUCTION: Recieved bid "+ str(bid_list[0].name) + "from agent" + str(agent.id) + "for price" + str(self.price_list[bid_list[0]]))
+        print("AUCTION: Recieved bid "+ str(bid_list[0][0].name) + "from agent" + str(agent.id) + "for price" + str(bid_list[0][1]))
         if self.bids_recieved == len(self.agent_list):
             print("recieved all bids , decidin..")
 
             
     def find_revenue_maximizing_distribution(self):
         #calc all possible combinations, check  revenue for all and pick most profitable and distribute evenly
-        pass
+        
 
 
     def print_bid_list(self,bid_list):
@@ -62,3 +62,6 @@ class Auction():
         self.price_list = {}
         for bundle in self.bundle_list:
             self.price_list[bundle]= 0
+
+    def update_price_list(self):
+        pass

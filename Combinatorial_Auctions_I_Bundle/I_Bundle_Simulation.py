@@ -64,7 +64,7 @@ class Job():
 def init_world():
     #location, Capacity    
     agent0= Agent((0,0),1,1) 
-    agent1= Agent((6,0),1,1)
+    agent1= Agent((6,6),1,1)
     agent2= Agent((1,5),1,1)
     
     

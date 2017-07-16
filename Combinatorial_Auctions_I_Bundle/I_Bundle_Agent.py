@@ -19,7 +19,7 @@ class Agent():
         self.won_last_auction =False #implies if won last auction
         self.distance_vector_calculated= False 
         self.bid_count= bid_count#how many bids will the agent send max
-        self.bid_vector = {}
+        self.bid_vector = []
 
     def hello_agent(self):
         print("Hello from Agent!")
@@ -39,10 +39,14 @@ class Agent():
         self.update_use_vector(new_bundle_price_list)
         #print("AG-ID:" +str(self.id) + " updated Use Vector to " + self.print_use_vector())        
    
-        bid_list = self.decide_on_bid(new_bundle_price_list)
+        self.decide_on_bid(new_bundle_price_list)
        # print("AG-ID:" +str(self.id) +"Sending bid for bundle:" + str(bid_list[0][0].name) + "which has  use " + str(self.use_vector[bid_list[0]]))
 
-        self.send_bid_list(bid_list,auctioneer)#TODO if there are no Profitable bids, send Stop bidding Signal to aucitoneer
+
+        print("AG-ID:" +str(self.id) +self.print_distance_vector())
+        print("AG-ID:" +str(self.id) +self.print_use_vector())
+        auctioneer.recv_bid_list(self, self.bid_vector,)
+        #self.send_bid_list(self, bid_list)#TODO if there are no Profitable bids, send Stop bidding Signal to aucitoneer
         #print(str(new_price_list))
         #for bundle in new_bundle_price_list:
         #    print("AG-ID:" +str(self.id) + "  Bundle ["+ str(bundle.name) +  "]and price " +str (new_bundle_price_list[bundle]))
@@ -52,10 +56,7 @@ class Agent():
 
     def repeat_bid(self ):
         pass
-        
-    def send_bid_list(self,bid_list,auctioneer):
-        for bid in bid_list:
-            auctioneer.recv_bid_list(bid_list,auctioneer)
+
             
 
 
@@ -73,7 +74,6 @@ class Agent():
             self.bid_vector = bid_list
             print("Calc best bundle : " + str(self.bid_vector[0][0].name) + "and for bid" +str (self.bid_vector[0][1]))
             #ret_dict[bundle] = price_list[bundle]
-        return bid_list        
 
     def calculate_distance_vector(self,bundle_price_list):
         for bundle in bundle_price_list:
