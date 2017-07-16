@@ -31,7 +31,6 @@ class Agent():
         if self.distance_vector_calculated == False :
             
             self.calculate_distance_vector(new_bundle_price_list)
-<<<<<<< HEAD
        # print("AG-ID:" +str(self.id) + " updated Distance Vector to " + self.print_distance_vector())
 
 
@@ -42,14 +41,6 @@ class Agent():
         print("AG-ID:" +str(self.id) +"Sending bid for bundle:" + str(bid_list[0].name) + "which has  use " + str(self.use_vector[bid_list[0]]))     
 
         self.send_bid_list(bid_list,auctioneer)
-=======
-        print("AG-ID:" +str(self.id) + " updated Distance Vector to " + self.print_distance_vector())
-
-
-        self.update_use_vecotr(new_bundle_price_list)
-        print("AG-ID:" +str(self.id) + " updated Use Vector to " + self.print_use_vector())        
-        
->>>>>>> 9515261eefa7ceae7400419d74ba764e6e579965
         #print(str(new_price_list))
         #for bundle in new_bundle_price_list:
         #    print("AG-ID:" +str(self.id) + "  Bundle ["+ str(bundle.name) +  "]and price " +str (new_bundle_price_list[bundle]))
@@ -115,16 +106,9 @@ class Agent():
         for location in bundle_new.jobs:
             #calculate distance fron First to Sencond, Second to Third  etc
             if(i+1 < len(bundle_new.jobs)):
-<<<<<<< HEAD
                 #print("AG-ID:" +str(self.id) + "Result was " + str(result) + "now is")
                 result += self.calculate_distance(bundle_new.jobs[i].location,bundle_new.jobs[i+1].location)
             i+=1
-=======
-                print("AG-ID:" +str(self.id) + "Result was " + str(result) + "now is")
-                result += self.calculate_distance(bundle_new.jobs[i].location,bundle_new.jobs[i+1].location)
-            i+=1
-            print(str(result))
->>>>>>> 9515261eefa7ceae7400419d74ba764e6e579965
         return result
         
       
