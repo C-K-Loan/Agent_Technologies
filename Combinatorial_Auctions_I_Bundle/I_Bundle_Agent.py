@@ -28,13 +28,17 @@ class Agent():
         if self.distance_vector_calculated == False :
             
             self.calculate_distance_vector(new_bundle_price_list)
+        print("AG-ID:" +str(self.id) + " updated Distance Vector to " + self.print_distance_vector())
+
+
+        self.update_use_vecotr(new_bundle_price_list)
+        print("AG-ID:" +str(self.id) + " updated Use Vector to " + self.print_use_vector())        
         
         #print(str(new_price_list))
         #for bundle in new_bundle_price_list:
         #    print("AG-ID:" +str(self.id) + "  Bundle ["+ str(bundle.name) +  "]and price " +str (new_bundle_price_list[bundle]))
         
         #self.update_use_vecotr(new_bundle_price_list)
-        print("AG-ID:" +str(self.id) + " updated Distance Vector to " + self.print_distance_vector())
  
 
     def calculate_distance_vector(self,bundle_price_list):
@@ -66,7 +70,8 @@ class Agent():
         
     def update_use_vecotr(self,bundle_price_list):#U, NutzenVektor für den Agenten, wenn er ein Bundle zum gegeben Preis kauft, update use Vector für neue Preise 
                          #TODO  Bundle Value - Distance To Bundle 
-                         1+1
+        for bundle in bundle_price_list:
+            self.use_vector[bundle] = int(bundle.b_value) - (bundle_price_list[bundle] + self.distance_vector[bundle]) # wertschötzung eines bundles = bundleWert - (distanz + preis)
 
 
     def calc_bundle_distance(self,bundle_new):
@@ -81,10 +86,11 @@ class Agent():
         i = 0
         for location in bundle_new.jobs:
             #calculate distance fron First to Sencond, Second to Third  etc
-            if(i!=0):
-                result += self.calculate_distance(bundle_new[i],location)
-                i+=1
-                
+            if(i+1 < len(bundle_new.jobs)):
+                print("AG-ID:" +str(self.id) + "Result was " + str(result) + "now is")
+                result += self.calculate_distance(bundle_new.jobs[i].location,bundle_new.jobs[i+1].location)
+            i+=1
+            print(str(result))
         return result
         
       
@@ -93,5 +99,4 @@ class Agent():
         dist = abs(a[0] - b[0] )+ abs(a[1] -b[1])
         return dist
     
-
 
