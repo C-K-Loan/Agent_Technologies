@@ -16,10 +16,10 @@ class Agent():
         Agent.id_counter += 1
         self.use_vector = {}#Key= Bundle, Value  = Use For That Bunlde (Bundle_Value - (Bundle Price+bundle_travel_distance))
         self.distance_vector = {}# A Dictonary with Keys = bundles, Value is Distance Agent has to Travel to Pick up all Jobs in that Bundle
-        self.won_last_auction=False #implies if won last auction
+        self.won_last_auction =False #implies if won last auction
         self.distance_vector_calculated= False 
         self.bid_count= bid_count#how many bids will the agent send max
-        
+        self.bid_vector = {}
 
     def hello_agent(self):
         print("Hello from Agent!")
@@ -36,11 +36,11 @@ class Agent():
        # print("AG-ID:" +str(self.id) + " updated Distance Vector to " + self.print_distance_vector())
 
 
-        self.update_use_vecotr(new_bundle_price_list)
+        self.update_use_vector(new_bundle_price_list)
         #print("AG-ID:" +str(self.id) + " updated Use Vector to " + self.print_use_vector())        
    
         bid_list = self.decide_on_bid(new_bundle_price_list)
-        print("AG-ID:" +str(self.id) +"Sending bid for bundle:" + str(bid_list[0].name) + "which has  use " + str(self.use_vector[bid_list[0]]))     
+       # print("AG-ID:" +str(self.id) +"Sending bid for bundle:" + str(bid_list[0][0].name) + "which has  use " + str(self.use_vector[bid_list[0]]))
 
         self.send_bid_list(bid_list,auctioneer)#TODO if there are no Profitable bids, send Stop bidding Signal to aucitoneer
         #print(str(new_price_list))
@@ -51,7 +51,7 @@ class Agent():
  
 
     def repeat_bid(self ):
-        1+1
+        pass
         
     def send_bid_list(self,bid_list,auctioneer):
         for bid in bid_list:
@@ -62,14 +62,17 @@ class Agent():
     def decide_on_bid(self,price_list):
         bid_list = []#list of most profitable bundles, [0] most profitable,[1] 2nd most profitable
         best_use = [-(math.inf),"default"]# set to 0, if we only want to bid on things with profit >1, second element is the the bundle 
-        
+        ret_dict = {}
         for i in range(self.bid_count):
             for bundle in self.use_vector:
                 if self.use_vector[bundle] > best_use[0] and bundle not in bid_list:
                     best_use[0] = self.use_vector[bundle]
                     best_use[1] = bundle
-            bid_list.append([best_use[1], price_list[bundle]])        
-                    
+            bid_list.append([best_use[1], price_list[bundle]])
+
+            self.bid_vector = bid_list
+            print("Calc best bundle : " + str(self.bid_vector[0][0].name) + "and for bid" +str (self.bid_vector[0][1]))
+            #ret_dict[bundle] = price_list[bundle]
         return bid_list        
 
     def calculate_distance_vector(self,bundle_price_list):
@@ -93,7 +96,7 @@ class Agent():
         return print_string
 
 
-    def update_use_vecotr(self,bundle_price_list):#U, NutzenVektor für den Agenten, wenn er ein Bundle zum gegeben Preis kauft, update use Vector für neue Preise 
+    def update_use_vector(self,bundle_price_list):#U, NutzenVektor für den Agenten, wenn er ein Bundle zum gegeben Preis kauft, update use Vector für neue Preise
                          #TODO  Bundle Value - Distance To Bundle 
         for bundle in bundle_price_list:
             self.use_vector[bundle] = int(bundle.b_value) - (bundle_price_list[bundle] + self.distance_vector[bundle]) # wertschötzung eines bundles = bundleWert - (distanz + preis)

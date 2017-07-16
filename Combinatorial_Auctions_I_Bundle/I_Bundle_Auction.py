@@ -42,11 +42,11 @@ class Auction():
         print("AUCTION: Recieved bid "+ str(bid_list[0].name) + "from agent" + str(agent.id) + "for price" + str(self.price_list[bid_list[0]]))
         if self.bids_recieved == len(self.agent_list):
             print("recieved all bids , decidin..")
+
             
     def find_revenue_maximizing_distribution(self):
         #calc all possible combinations, check  revenue for all and pick most profitable and distribute evenly
-        1+1
-
+        pass
 
 
     def print_bid_list(self,bid_list):

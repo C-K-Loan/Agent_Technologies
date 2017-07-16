@@ -96,7 +96,7 @@ def simulate(t,manager_release_time_list):
                 #Phase 1STEP 2 collect Pre Bids
                 print("PHASE1:>>>>>>>>>>>>COLLECTING PRE BIDS STEP 2<<<<<<<<<<<<<")     
                 for manager_sim in manager_release_time_list[time]:#simulate evermanger for time 
-                    print(">>>>>>>>>>>MANAGER ID :"+ str(manager_sim.id)+"TURN<<<<<<<<<<")
+                    print(">>>>>>>>>>>MANAGER ID: "+ str(manager_sim.id))
                     if manager_sim.finished == False and manager_sim.phase == 1: # ALPHA IF
                         manager_sim.get_pre_bids()
                 animation.update_bids()#write a row for all bids
@@ -105,7 +105,7 @@ def simulate(t,manager_release_time_list):
                 print("PHASE1:>>>>>>>>>>>>EVALUATING BIDS....<<<<<<<<<<<<<")
                 #Phase1#STEP 3 And 4 Evaluate Pre Bids and send Responses to Agents, Agents will react with DEF bids
                 for manager_sim in manager_release_time_list[time]:#simulate evermanger for time 
-                    print(">>>>>>>>>>>MANAGER ID :"+ str(manager_sim.id)+"TURN<<<<<<<<<<")
+                    print(">>>>>>>>>>>MANAGER ID: "+ str(manager_sim.id))
                     if manager_sim.finished == False and manager_sim.phase == 1: # ALPHA IF
                         manager_sim.find_and_set_best_bidder()                        
                 #animation.update_bids()
