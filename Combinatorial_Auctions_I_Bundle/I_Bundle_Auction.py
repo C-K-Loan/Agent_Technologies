@@ -24,7 +24,7 @@ class Auction():
  
     def advertise_bundles(self):
         for agent in self.agent_list:
-            agent.recv_price_list(self.price_list)
+            agent.recv_price_list(self.price_list,self)
         
         
 
@@ -32,7 +32,14 @@ class Auction():
     def hello_auction(self):
         print("Hello from Auction!")
         
-    
+
+    def recv_bid_list(x,bid_list,agent):
+        #recviece the bids of an agent
+        print("AUCTION: Recieved bid_list"+ str(bid_list[0].name) + "from agent" + str(x.id))
+        
+        for bundle in bid_list:
+            print ("extra print" + bundle.name)
+
     def recv_test_agent(self,test_agent):
         test_agent.hello_agent()
 

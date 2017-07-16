@@ -21,7 +21,7 @@ class Bundle():
         self.id = Bundle.id_counter
         self.jobs = jobs
         self.name = name
-        self.calc_and_set_bundle_value()
+        self.b_value = self.calc_and_set_bundle_value()
         self.type = bundle_type  
         Bundle.instances.append(self)
         Bundle.id_counter += 1
@@ -30,8 +30,7 @@ class Bundle():
         value = 0
         for job in self.jobs:
             value += int(job.value)
-        self.value=job    
-        
+        return value
    
     
 class Job():
@@ -64,9 +63,9 @@ class Job():
 #initialize all objects
 def init_world():
     #location, Capacity    
-    agent0= Agent((0,0),1) 
-    agent1= Agent((6,0),1)
-    agent2= Agent((1,5),1)
+    agent0= Agent((0,0),1,1) 
+    agent1= Agent((6,0),1,1)
+    agent2= Agent((1,5),1,1)
     
     
     #job Location, Value, type
