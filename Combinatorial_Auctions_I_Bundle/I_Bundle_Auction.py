@@ -35,8 +35,14 @@ class Auction():
 
     def recv_bid_list(x,bid_list,agent):
         #recviece the bids of an agent
-        print("AUCTION: Recieved bid_list"+ str(bid_list[0].name) + "from agent" + str(x.id))
+        print("AUCTION: Recieved bid "+ str(bid_list[0].name) + "from agent" + str(x.id))
         
+  
+
+    def find_
+      
+        
+    def print_bid_list(self,bid_list):
         for bundle in bid_list:
             print ("extra print" + bundle.name)
 
