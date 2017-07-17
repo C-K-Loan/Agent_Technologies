@@ -7,7 +7,7 @@ class Auction():
     instances = []
     id_counter = 0
 
-    def __init__(self,bundle_list,agent_list ):
+    def __init__(self,bundle_list,agent_list,epsilon ):
         self.id = Auction.id_counter
         self.agent_list = agent_list
         self.bundle_list = bundle_list
@@ -16,6 +16,7 @@ class Auction():
         self.agents_bid_list = {}# dictonary with key= Agent, Value is the bid list from that agent
         self.init_price_list()
         self.bids_recieved = 0 
+        self.epsilon = epsilon # by how much do we increase prices 
         
         
 
@@ -41,12 +42,48 @@ class Auction():
         self.agents_bid_list[agent] = bid_list# for Every Agent entry in DIct, there is a List of his XOR bids
         print("AUCTION: Recieved bid "+ str(bid_list[0][0].name) + "from agent" + str(agent.id) + "for price" + str(bid_list[0][1]))
         if self.bids_recieved == len(self.agent_list):
-            print("recieved all bids , decidin..")
+            self.bids_recieved= 0
+            print("Auction: recieved all bids , deciding on winner....")
             self.find_revenue_maximizing_distribution()
+            self.calculate_new_price_list()
+            print("Auction: NOTIFYING LOOSERS ____________________")
+            self.notify_loosers()
+            print("Auction: NOTIFYING WINNERS ____________________")
+            self.notify_winners()
+        
+            
+            
+    def calculate_new_price_list(self):#copy Old list, increase the price for each Bundle by epsilon
+        for element in self.looser_list:
+            print("Auction: increasing bundle [: "+ element[1].name + "] by " + str(self.epsilon))
+            self.price_list[element[1]] +=self.epsilon# the bundle, the agent wanted to win
+        self.print_price_list()
+        
+        
+        
 
+        
+ #    def recv_win_notification(self,new_bundle_price_list,bundle_won,auctioneer):#Notify API for Auctioneer, to tell Agent he won
+       
+    def notify_winners(self):#notify all agents, wo who the round
+        for element in self.winner_list:
+            print("Auction: Notify Win for bunde [: "+ element[1].name + "] for Agent " + str(element[0].id))
+            element[0].recv_win_notification(self.price_list,element[1],self)
+        
+        
+        
+
+    def notify_loosers(self):#notify all agents who lost the round
+        for element in self.winner_list:
+            print("Auction: Notify loss for bunde [: "+ element[1].name + "] for Agent " + str(element[0].id))
+            element[0].recv_loss_notification(self.price_list,element[1],self)
+        
+        
     def type_bundles(self):
         for bundle in self.bundle_list:
             self.type_bundle[bundle.type]
+            
+            
     def find_revenue_maximizing_distribution(self):
         #calc all possible combinations, check  revenue for all and pick most profitable and distribute evenly
         win_list = []
@@ -92,6 +129,9 @@ class Auction():
             print("Loser: Agent ID: " + str(lo_list[i][0].id)  + " with bundle: " + lo_list[i][1].name)
 
 
+        self.looser_list = lo_list
+        self.winner_list = win_list
+
     def print_bid_list(self,bid_list):
         for bundle in bid_list:
             print ("extra print" + bundle.name)
@@ -117,8 +157,9 @@ class Auction():
             return False
         else: return True
 
-    def create_subsets(self, bid_list):
-        #alle möglichen kombinationen rausfinden und dann die kicken, die nicht kompatibel sind.
-        bcomb = []
-
-        pass
+    def print_price_list(self):
+        for bundle in self.price_list:
+            print("Auction: Price for Bundle[ " + bundle.name + " ] is " + str(self.price_list[bundle]))
+            
+            
+        
