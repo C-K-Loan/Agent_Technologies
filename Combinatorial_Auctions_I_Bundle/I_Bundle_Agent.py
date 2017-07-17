@@ -27,6 +27,7 @@ class Agent():
         
     def recv_price_list(self,new_bundle_price_list,auctioneer):
         #recieve a new price list and formulate a new bid if possible or do nothing
+        self.auctioneer = auctioneer
         if self.won_last_auction == True:
             self.repeat_bid()#todo
         print("recieved new price list!")
@@ -45,8 +46,8 @@ class Agent():
 #        print("AG-ID:" +str(self.id) +self.print_distance_vector())
 #        print("AG-ID:" +str(self.id) +self.print_use_vector())
 
-        print("AG-ID:" +str(self.id) + "sending bid")
-        auctioneer.recv_bid_list(self, self.bid_vector,)
+        print("AG-ID:" +str(self.id) + "sending bid for Bundle [ " + self.print_best_use() + " ] ")
+        self.auctioneer.recv_bid_list(self, self.bid_vector)
         #self.send_bid_list(self, bid_list)#TODO if there are no Profitable bids, send Stop bidding Signal to aucitoneer
         #print(str(new_price_list))
         #for bundle in new_bundle_price_list:
@@ -61,13 +62,14 @@ class Agent():
         self.repeat_bid()#repeat last bid, dont update anything
         
 
-    def recv_loss_notification(self,new_bundle_price_list,auctioneer):#Notify API for Auctioneer, to tell Agent he lost
+    def recv_loss_notification(self,new_bundle_price_list,bundle_lost, auctioneer):#Notify API for Auctioneer, to tell Agent he lost
         self.won_last_auction = False
-        recv_price_list(new_bundle_price_list,auctioneer)
+        self.recv_price_list(new_bundle_price_list,auctioneer)
        
 
     def repeat_bid(self ):
-        auctioneer.recv_bid_list(self, self.bid_vector,)
+        print("AG-ID:" +str(self.id) + "sending bid for Bundle [ " + self.print_best_use() + " ] ")
+        self.auctioneer.recv_bid_list(self, self.bid_vector,)
 
         pass
 
@@ -102,6 +104,15 @@ class Agent():
             print_string+= str(bundle.name) + " U: " + str(self.use_vector[bundle] )+ "|"#values are the calculated Use Value for that key/bunde
         return print_string
 
+    def print_best_use(self):
+        print_string =""
+        for bundle in self.use_vector:#key are bundles
+            print_string+= str(bundle.name) 
+            break
+        return print_string
+
+
+
     def print_bid_vector(self):
         print_string =""
         for bundle in self.use_vector:#key are bundles
@@ -115,6 +126,9 @@ class Agent():
         for bundle in self.distance_vector:#key are bundles
             print_string+= str(bundle.name) + " Distance: " + str(self.distance_vector[bundle] )+ "|"#values are the calculated Use Value for that key/bunde
         return print_string
+
+
+
 
 
     def update_use_vector(self,bundle_price_list):#U, NutzenVektor für den Agenten, wenn er ein Bundle zum gegeben Preis kauft, update use Vector für neue Preise
