@@ -83,13 +83,13 @@ class Auction():
         for i in range(len(lo_list)):
             loagent = lo_list[i]
             #loser Agent wir mit [loser agent, sein bundle] ersetzt
-            print("loser agent print bundle: " + str(self.agents_bid_list[loagent][0][1]))
-            lo_list[i] = [loagent, self.agents_bid_list[loagent][0][1]]
+            print("loser agent print bundle: " + str(self.agents_bid_list[loagent][0][0].name))
+            lo_list[i] = [loagent, self.agents_bid_list[loagent][0][0]]
         #print function
         for i in range(len(win_list)):
             print ("Winner: Agent ID: " + str(win_list[i][0].id) + " with bundle: " + str(win_list[i][1].name))
         for i in range (len(lo_list)):
-            print("Loser: Agent ID: " + str(lo_list[i][0].id)  + " with bundle: " + str(lo_list[i][1].name))
+            print("Loser: Agent ID: " + str(lo_list[i][0].id)  + " with bundle: " + lo_list[i][1].name)
 
 
     def print_bid_list(self,bid_list):
