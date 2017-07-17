@@ -50,7 +50,9 @@ class Auction():
     def find_revenue_maximizing_distribution(self):
         #calc all possible combinations, check  revenue for all and pick most profitable and distribute evenly
         win_list = []
+        first_agent = self.agent_list[0]
         highest_bidder = [self.agent_list[0], 0] #highest bidding agent and bid
+        updated = False
         bidcount = 1
         for agent in self.agent_list:
             agentbund = self.agents_bid_list[agent][0][0]
@@ -58,17 +60,36 @@ class Auction():
             if agentbid > highest_bidder[1]:
                 highest_bidder[0]= agent
                 highest_bidder[1] = agentbid
-                win_list.append([agent.id, agentbund, agentbid])
+                win_list.append([agent, agentbund, agentbid])
+                updated = True
+        if not updated:
+            win_list.append([first_agent, self.agents_bid_list[first_agent][0][0], self.agents_bid_list[first_agent][0][1]])
         i = 1 # winlistindex
         for agent in self.agent_list:
-            if agent.id not in win_list[0]:
+            not_in = True
+            for a in range (i):
+                if agent in win_list[a]:
+                    not_in = False
+            if not_in:
                 agentbund = self.agents_bid_list[agent][0][0]
                 agentbid = self.agents_bid_list[agent][0][1]
                 if self.compatible(agentbund, win_list[0][1]):
-                    win_list[i] = (agent.id, agentbund, agentbid)
+                    win_list.append ([agent, agentbund, agentbid])
                     i +=1
-        print ("WINLIST PRINT: " + win_list)
-
+        #loser list erstellung
+        lo_list = self.agent_list
+        for i in range(len(win_list)):
+            lo_list.remove(win_list[i][0])
+        for i in range(len(lo_list)):
+            loagent = lo_list[i]
+            #loser Agent wir mit [loser agent, sein bundle] ersetzt
+            print("loser agent print bundle: " + str(self.agents_bid_list[loagent][0][1]))
+            lo_list[i] = [loagent, self.agents_bid_list[loagent][0][1]]
+        #print function
+        for i in range(len(win_list)):
+            print ("Winner: Agent ID: " + str(win_list[i][0].id) + " with bundle: " + str(win_list[i][1].name))
+        for i in range (len(lo_list)):
+            print("Loser: Agent ID: " + str(lo_list[i][0].id)  + " with bundle: " + str(lo_list[i][1].name))
 
 
     def print_bid_list(self,bid_list):
@@ -92,7 +113,7 @@ class Auction():
             print("bundle: " +  bundle.name)
 
     def compatible(self, b1, b2):
-        if b1.jobs in b2.jobs | b2.jobs in b1.jobs | b1.type == b2.type:
+        if (b1.jobs in b2.jobs) | (b2.jobs in b1.jobs) |(b1.type == b2.type):
             return False
         else: return True
 
