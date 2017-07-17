@@ -43,10 +43,32 @@ class Auction():
         if self.bids_recieved == len(self.agent_list):
             print("recieved all bids , decidin..")
             self.find_revenue_maximizing_distribution()
-            
+
+    def type_bundles(self):
+        for bundle in self.bundle_list:
+            self.type_bundle[bundle.type]
     def find_revenue_maximizing_distribution(self):
         #calc all possible combinations, check  revenue for all and pick most profitable and distribute evenly
-        self.find_winners()
+        win_list = []
+        highest_bidder = [self.agent_list[0], 0] #highest bidding agent and bid
+        bidcount = 1
+        for agent in self.agent_list:
+            agentbund = self.agents_bid_list[agent][0][0]
+            agentbid = self.agents_bid_list[agent][0][1]
+            if agentbid > highest_bidder[1]:
+                highest_bidder[0]= agent
+                highest_bidder[1] = agentbid
+                win_list.append([agent.id, agentbund, agentbid])
+        i = 1 # winlistindex
+        for agent in self.agent_list:
+            if agent.id not in win_list[0]:
+                agentbund = self.agents_bid_list[agent][0][0]
+                agentbid = self.agents_bid_list[agent][0][1]
+                if self.compatible(agentbund, win_list[0][1]):
+                    win_list[i] = (agent.id, agentbund, agentbid)
+                    i +=1
+        print ("WINLIST PRINT: " + win_list)
+
 
 
     def print_bid_list(self,bid_list):
@@ -65,13 +87,17 @@ class Auction():
 
     def update_price_list(self):
         pass
-    def find_winners(self):
+    def find_winner(self):
         for bundle in self.bundle_list:
             print("bundle: " +  bundle.name)
 
-    def compatible_bundle(self, b1, b2):
-        if b1 in b2 || b2 in b1
+    def compatible(self, b1, b2):
+        if b1.jobs in b2.jobs | b2.jobs in b1.jobs | b1.type == b2.type:
+            return False
+        else: return True
 
-    def create_subsets(self):
+    def create_subsets(self, bid_list):
         #alle möglichen kombinationen rausfinden und dann die kicken, die nicht kompatibel sind.
+        bcomb = []
+
         pass
