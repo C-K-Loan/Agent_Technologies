@@ -83,7 +83,7 @@ def init_world():
 
     bundle_list = [bundle_0,bundle_1,bundle_2,bundle_3]
     agent_list = [agent0,agent1,agent2]
-    auction= Auction(bundle_list,agent_list)    
+    auction= Auction(bundle_list,agent_list, 1)
     auction.start_auction()
     
     

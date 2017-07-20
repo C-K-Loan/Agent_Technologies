@@ -1,6 +1,7 @@
 
 import numpy as np
 import math
+import copy
 #from I_Bundle_Agent import Agent
 
 class Auction():
@@ -92,8 +93,8 @@ class Auction():
         updated = False
         bidcount = 1
         for agent in self.agent_list:
-            agentbund = self.agents_bid_list[agent][0][0]
-            agentbid = self.agents_bid_list[agent][0][1]
+            agentbund = copy.deepcopy(self.agents_bid_list[agent][0][0])
+            agentbid = copy.deepcopy(self.agents_bid_list[agent][0][1])
             if agentbid > highest_bidder[1]:
                 highest_bidder[0]= agent
                 highest_bidder[1] = agentbid
@@ -108,14 +109,16 @@ class Auction():
                 if agent in win_list[a]:
                     not_in = False
             if not_in:
-                agentbund = self.agents_bid_list[agent][0][0]
-                agentbid = self.agents_bid_list[agent][0][1]
+                agentbund = copy.deepcopy(self.agents_bid_list[agent][0][0])
+                agentbid = copy.deepcopy(self.agents_bid_list[agent][0][1])
                 if self.compatible(agentbund, win_list[0][1]):
                     win_list.append ([agent, agentbund, agentbid])
                     i +=1
         #loser list erstellung
-        lo_list = self.agent_list
+
+        lo_list = copy.deepcopy(self.agent_list)
         for i in range(len(win_list)):
+            print("to remove: " + str(win_list[i][0].id) + "lo_list length: " +str(len(lo_list)))
             lo_list.remove(win_list[i][0])
         for i in range(len(lo_list)):
             loagent = lo_list[i]
@@ -138,7 +141,6 @@ class Auction():
 
     def recv_test_agent(self,test_agent):
         test_agent.hello_agent()
-
 
     def init_price_list(self):
         #init all bundle prices to 0
