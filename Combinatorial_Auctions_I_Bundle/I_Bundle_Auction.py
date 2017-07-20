@@ -116,10 +116,12 @@ class Auction():
                     i +=1
         #loser list erstellung
 
-        lo_list = copy.deepcopy(self.agent_list)
+        lo_list = copy.copy(self.agent_list)
+        print("DEBUG: PRE laenge von lo_list:" + str(len(lo_list)) + " länge von agent_list: " + str(len(self.agent_list)))
         for i in range(len(win_list)):
             print("to remove: " + str(win_list[i][0].id) + "lo_list length: " +str(len(lo_list)))
             lo_list.remove(win_list[i][0])
+        print("DEBUG: after first loop, laenge von lo_list:" + str(len(lo_list)) + " länge von agent_list: " + str(len(self.agent_list)))
         for i in range(len(lo_list)):
             loagent = lo_list[i]
             #loser Agent wir mit [loser agent, sein bundle] ersetzt

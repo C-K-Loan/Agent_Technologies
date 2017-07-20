@@ -78,7 +78,7 @@ class Agent():
 
     def decide_on_bid(self,price_list):
         bid_list = []#list of most profitable bundles, [0] most profitable,[1] 2nd most profitable
-        best_use = [-(math.inf),"default"]# set to 0, if we only want to bid on things with profit >1, second element is the the bundle 
+        best_use = [0,"default"]# set to 0, if we only want to bid on things with profit >1, second element is the the bundle
         ret_dict = {}
         for i in range(self.bid_count):
             for bundle in self.use_vector:
