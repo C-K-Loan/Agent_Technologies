@@ -1,4 +1,3 @@
-
 import numpy as np
 import math
 import copy
@@ -18,7 +17,7 @@ class Auction():
         self.init_price_list()
         self.bids_recieved = 0 
         self.epsilon = epsilon # by how much do we increase prices 
-        
+        self.iteration = 0
         
 
     def start_auction(self):
@@ -42,16 +41,21 @@ class Auction():
         #recviece the bids of an agent and safe the bids until we have all bids recieved or Timeout
         self.agents_bid_list[agent] = bid_list# for Every Agent entry in DIct, there is a List of his XOR bids
         print("AUCTION: Recieved bid "+ str(bid_list[0][0].name) + "from agent" + str(agent.id) + "for price" + str(bid_list[0][1]))
+
         if self.bids_recieved == len(self.agent_list):
+            input("Iteration:"+ str(self.iteration)+"--------------------ALL bids Recieved, Evalute them? ---------------------------------")
+            self.iteration +=1
+  
             self.bids_recieved= 0
-            print("Auction: recieved all bids , deciding on winner....")
+            #print("Auction: recieved all bids , deciding on winner....")
             self.find_revenue_maximizing_distribution()
             self.calculate_new_price_list()
-            print("Auction: NOTIFYING LOOSERS ____________________")
+            print("AFTER CALC ne wPrice, NEW PRICE LIST ISSS :::")
+            self.print_price_list()
+      
             self.notify_loosers()
-            print("Auction: NOTIFYING WINNERS ____________________")
             self.notify_winners()
-        
+           
             
             
     def calculate_new_price_list(self):#copy Old list, increase the price for each Bundle by epsilon
@@ -68,7 +72,7 @@ class Auction():
        
     def notify_winners(self):#notify all agents, wo who the round
         for element in self.winner_list:
-            print("Auction: Notify Win for bunde [: "+ element[1].name + "] for Agent " + str(element[0].id))
+            print("WINNER IS : [: "+ str(element[0].id) +  "] for Agent " + element[1].name)
             element[0].recv_win_notification(self.price_list,element[1],self)
         
         
@@ -76,7 +80,7 @@ class Auction():
 
     def notify_loosers(self):#notify all agents who lost the round
         for element in self.winner_list:
-            print("Auction: Notify loss for bunde [: "+ element[1].name + "] for Agent " + str(element[0].id))
+            print("LOOSER IS : [: "+ str(element[0].id) + "] for Bundle " +  element[1].name )
             element[0].recv_loss_notification(self.price_list,element[1],self)
         
         
@@ -93,8 +97,8 @@ class Auction():
         updated = False
         bidcount = 1
         for agent in self.agent_list:
-            agentbund = copy.deepcopy(self.agents_bid_list[agent][0][0])
-            agentbid = copy.deepcopy(self.agents_bid_list[agent][0][1])
+            agentbund = copy.copy(self.agents_bid_list[agent][0][0])
+            agentbid = copy.copy(self.agents_bid_list[agent][0][1])
             if agentbid > highest_bidder[1]:
                 highest_bidder[0]= agent
                 highest_bidder[1] = agentbid
@@ -109,29 +113,29 @@ class Auction():
                 if agent in win_list[a]:
                     not_in = False
             if not_in:
-                agentbund = copy.deepcopy(self.agents_bid_list[agent][0][0])
-                agentbid = copy.deepcopy(self.agents_bid_list[agent][0][1])
+                agentbund = copy.copy(self.agents_bid_list[agent][0][0])
+                agentbid = copy.copy(self.agents_bid_list[agent][0][1])
                 if self.compatible(agentbund, win_list[0][1]):
                     win_list.append ([agent, agentbund, agentbid])
                     i +=1
         #loser list erstellung
 
         lo_list = copy.copy(self.agent_list)
-        print("DEBUG: PRE laenge von lo_list:" + str(len(lo_list)) + " länge von agent_list: " + str(len(self.agent_list)))
+        #print("DEBUG: PRE laenge von lo_list:" + str(len(lo_list)) + " länge von agent_list: " + str(len(self.agent_list)))
         for i in range(len(win_list)):
-            print("to remove: " + str(win_list[i][0].id) + "lo_list length: " +str(len(lo_list)))
+         #   print("to remove: " + str(win_list[i][0].id) + "lo_list length: " +str(len(lo_list)))
             lo_list.remove(win_list[i][0])
-        print("DEBUG: after first loop, laenge von lo_list:" + str(len(lo_list)) + " länge von agent_list: " + str(len(self.agent_list)))
+        #print("DEBUG: after first loop, laenge von lo_list:" + str(len(lo_list)) + " länge von agent_list: " + str(len(self.agent_list)))
         for i in range(len(lo_list)):
             loagent = lo_list[i]
             #loser Agent wir mit [loser agent, sein bundle] ersetzt
-            print("loser agent print bundle: " + str(self.agents_bid_list[loagent][0][0].name))
+            #print("loser agent print bundle: " + str(self.agents_bid_list[loagent][0][0].name))
             lo_list[i] = [loagent, self.agents_bid_list[loagent][0][0]]
         #print function
-        for i in range(len(win_list)):
-            print ("Winner: Agent ID: " + str(win_list[i][0].id) + " with bundle: " + str(win_list[i][1].name))
-        for i in range (len(lo_list)):
-            print("Loser: Agent ID: " + str(lo_list[i][0].id)  + " with bundle: " + lo_list[i][1].name)
+        #for i in range(len(win_list)):
+          #  print ("Winner: Agent ID: " + str(win_list[i][0].id) + " with bundle: " + str(win_list[i][1].name))
+       # for i in range (len(lo_list)):
+           # print("Loser: Agent ID: " + str(lo_list[i][0].id)  + " with bundle: " + lo_list[i][1].name)
 
 
         self.looser_list = lo_list
@@ -164,6 +168,3 @@ class Auction():
     def print_price_list(self):
         for bundle in self.price_list:
             print("Auction: Price for Bundle[ " + bundle.name + " ] is " + str(self.price_list[bundle]))
-            
-            
-        
