@@ -1,14 +1,12 @@
 from tkinter import *
-#import I_Bundle_Agent as agent
 from I_Bundle_Agent import Agent
 import I_Bundle_Auction as auction
 
 from I_Bundle_Simulation import Bundle
 import tkinter as tk
 import I_Bundle_Simulation as simulation
-#for agent in Agent.instances:
+from time import sleep
 
-#for manager in Encp_manager.instances
 
 class ExampleApp(tk.Tk):
     def __init__(self):
@@ -19,7 +17,9 @@ class ExampleApp(tk.Tk):
 #        print("Row Count " + str(simulation.Bundle.id_counter+ Agent.id_counter+3))
         t = SimpleTable(self, 10,simulation.Bundle.id_counter+ Agent.id_counter+3)#
         t.pack(side="top", fill="x")
-#
+        self.render_status = False #has an Iteration been rendered?
+        
+        
 class SimpleTable(tk.Frame):
     def __init__(self, parent, rows=10, columns=2):
         # use black background so it "peeks through" to 
@@ -83,9 +83,51 @@ class SimpleTable(tk.Frame):
     def update_GUI(self):#todo, maybe auctioneer gives all parameter
         #uodate a row, after an Agent Decided on WHO won Auction
         1+1
-init_world()
+
+
+    def get_render_status(self):# called from auctioneer, to know if last iteration renderd
+        return self.render_status
+
+
+    def set_render_status(self,value):# called from auctioneer, to set render status
+        self.render_status = vale
+
+
+
+#import tkinter
+from time import sleep
+
+def update_txt(event = None):
+    vals = ['This is some text.',
+        'This is some more.',
+        'Blah blah blah',"sadasd","hello","rofl", "knofl", "bofl"]
+    i = 0
+    while i < len(vals):
+        txt.delete('1.0','end')
+        txt.insert('1.0',vals[i])
+        txt.update_idletasks()
+        sleep(2)
+        i=i+1
+        
+        
+
+#main = tkinter.Tk()
+txt = tkinter.Text(main)
+txt.grid()
+"""
+main.after(1000,update_txt)
+main.mainloop()
+"""
+
+
+
+
+simulation.init_world()
 
 app = ExampleApp()
 
+#app.after(1000,update_txt())
+app.update()
 
-app.mainloop()
+
+#start_auction()
