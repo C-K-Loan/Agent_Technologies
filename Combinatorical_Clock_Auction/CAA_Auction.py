@@ -74,4 +74,4 @@ class Auction():
         for agent in self.agent_list:
             print("   Prices for agent " +str(agent.id) + ":")
             for bundle in agent.own_prices:
-                print("      " +bundle.name + " with Value " + str(agent.own_prices[bundle]))
+                print("      " +bundle.name + " with Value " + str(agent.own_prices[bundle]) + " Eligibility: " + str(agent.eligibility))
