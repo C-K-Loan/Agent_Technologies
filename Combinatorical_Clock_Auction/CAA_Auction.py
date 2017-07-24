@@ -65,13 +65,11 @@ class Auction():
         for bid in Bid.instances:
             if increase[bid.bundle] == False:
                 self.prices[bid.bundle] += 1
-            increase[bid.bundle] = True
+                increase[bid.bundle] = True
 
     def print_prices(self):
         for bundle in self.prices:
             print("Auction: Price for Bundle[ " + bundle.name + " ] is " + str(self.prices[bundle]))
-        #for bid in Bid.instances:
-         #   print (str(bid.agent.id) + " won bundle " + bid.bundle.name)
     def print_agent_prices(self):
         for agent in self.agent_list:
             print("   Prices for agent " +str(agent.id) + ":")

@@ -4,7 +4,7 @@ import copy
 
 class Agent():
     instances = []
-    id_counter = 0
+    id_counter = 1
 
     #
     def __init__(self, x, k, bid_count):
@@ -12,6 +12,7 @@ class Agent():
         self.id = Agent.id_counter
         self.location = x
         self.start_location = x
+        self.capacity = k
         self.max_capacity = k
         self.bid_count = bid_count  # how many bids will the agent send max
         #Berechtigungspunkte
@@ -33,7 +34,7 @@ class Agent():
         self.auctioneer = auctioneer
         self.distance_vector = {}
         self.use_vector = {}
-
+        self.capacity = self.max_capacity
 
 
         #self.calculate_distance_vector(prices)
@@ -51,10 +52,9 @@ class Agent():
             self.distance_vector_calculated = True
 
     def update_use_vector(self, prices):  # U, NutzenVektor für den Agenten, wenn er ein Bundle zum gegeben Preis kauft, update use Vector für neue Preise
-            # TODO  Bundle Value - Distance To Bundle
             for bundle in prices:
                 self.use_vector[bundle] = int(bundle.b_value) - (prices[bundle] + self.distance_vector[bundle])  # wertschötzung eines bundles = bundleWert - (distanz +
-                if len(bundle.jobs) > self.max_capacity: #Kapazität beachten
+                if len(bundle.jobs) > self.capacity: #Kapazität beachten
                     self.use_vector[bundle] = -1000
                 if self.bid_type != "":
                     if bundle.jobs[0].type != self.bid_type:
@@ -89,7 +89,6 @@ class Agent():
         self.update_use_vector(prices_copy)
         print("for Agent: " + str(self.id))
         for e in range (self.eligibility-1):
-            #print ("eligibsglkb ist: "+  str(e))
             sorted_uses = sorted(self.use_vector.items(), key=lambda x: x[1], reverse=True)  # usevektor absteigend nach use sortieren
             self.print_sorted_uses(sorted_uses)
             if len(sorted_uses) < 1:
@@ -121,7 +120,7 @@ class Agent():
                 #         prices_copy[b] = math.inf
 
            #     print(len(prices_copy))
-                self.max_capacity -= len(best_bundle.jobs)
+                self.capacity -= len(best_bundle.jobs)
                 self.distance_vector = {}
                 self.use_vector = {}
                 self.calculate_distance_vector(prices_copy)
