@@ -43,20 +43,6 @@ class Agent():
         self.set_bids(prices)
         auctioneer.agents_done += 1
         return
-        # print("AG-ID:" +str(self.id) +"Sending bid for bundle:" + str(bid_list[0][0].name) + "which has  use " + str(self.use_vector[bid_list[0]]))
-
-
-        #        print("AG-ID:" +str(self.id) +self.print_distance_vector())
-        #        print("AG-ID:" +str(self.id) +self.print_use_vector())
-
-        #print("AG-ID:" + str(self.id) + "sending bid for Bundle [ " + self.print_best_use() + " ] ")
-       # self.auctioneer.recv_bid_list(self, self.bid_vector)
-        # self.send_bid_list(self, bid_list)#TODO if there are no Profitable bids, send Stop bidding Signal to aucitoneer
-        # print(str(new_price_list))
-        # for bundle in new_bundle_price_list:
-        #    print("AG-ID:" +str(self.id) + "  Bundle ["+ str(bundle.name) +  "]and price " +str (new_bundle_price_list[bundle]))
-
-        # self.update_use_vecotr(new_bundle_price_list)
 
     def calculate_distance_vector(self, prices):
             for bundle in prices:

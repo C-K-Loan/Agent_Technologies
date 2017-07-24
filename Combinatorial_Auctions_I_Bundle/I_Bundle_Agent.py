@@ -88,7 +88,7 @@ class Agent():
             bid_list.append([best_use[1], price_list[bundle]])
 
             self.bid_vector = bid_list
-            print("Calc best bundle : " + str(self.bid_vector[0][0].name) + "and for bid" +str (self.bid_vector[0][1]))
+            print("Calc best bundle : " + str(self.bid_vector[0][0].name) + "bid: " +str (self.bid_vector[0][1]))
             #ret_dict[bundle] = price_list[bundle]
 
     def calculate_distance_vector(self,bundle_price_list):
