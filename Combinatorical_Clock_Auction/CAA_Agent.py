@@ -35,7 +35,7 @@ class Agent():
         self.distance_vector = {}
         self.use_vector = {}
         self.capacity = self.max_capacity
-
+        print("juhu")
 
         #self.calculate_distance_vector(prices)
         #self.update_use_vector(prices)
