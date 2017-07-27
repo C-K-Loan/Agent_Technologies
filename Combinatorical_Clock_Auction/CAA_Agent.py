@@ -16,7 +16,7 @@ class Agent():
         self.max_capacity = k
         self.bid_count = bid_count  # how many bids will the agent send max
         #Berechtigungspunkte
-        self.eligibility = min(bid_count, 3) # min(eligibility,3))
+        self.eligibility = min(bid_count, 4) # min(eligibility,3))
         self.pref = {} # preferences
         self.use_vector = {}  # Key= Bundle, Value  = Use For That Bunlde (Bundle_Value - (Bundle Price+bundle_travel_distance))
         self.distance_vector = {}  # A Dictonary with Keys = bundles, Value is Distance Agent has to Travel to Pick up all Jobs in that Bundle
@@ -35,7 +35,7 @@ class Agent():
         self.distance_vector = {}
         self.use_vector = {}
         self.capacity = self.max_capacity
-        print("juhu")
+       # print("juhu")
 
         #self.calculate_distance_vector(prices)
         #self.update_use_vector(prices)
@@ -88,7 +88,7 @@ class Agent():
         self.calculate_distance_vector(prices_copy)
         self.update_use_vector(prices_copy)
         print("for Agent: " + str(self.id))
-        for e in range (self.eligibility-1):
+        for e in range (self.eligibility):
             sorted_uses = sorted(self.use_vector.items(), key=lambda x: x[1], reverse=True)  # usevektor absteigend nach use sortieren
             self.print_sorted_uses(sorted_uses)
             if len(sorted_uses) < 1:
@@ -104,13 +104,13 @@ class Agent():
                 self.update_location(best_bundle)
            #     print("updated location: " + str(self.location))
 
-                # #Remove unfitting bundles
-                # prices_copy.pop(best_bundle)
-                # if len(best_bundle.jobs) > 1:
-                #     for j in best_bundle.jobs:
-                #         for b in list(prices_copy):
-                #             if j in b.jobs:
-                #                 prices_copy.pop(b)
+                #Remove unfitting bundles
+                prices_copy.pop(best_bundle)
+                if len(best_bundle.jobs) > 1:
+                    for j in best_bundle.jobs:
+                        for b in list(prices_copy):
+                            if j in b.jobs:
+                                prices_copy.pop(b)
 
 
 
