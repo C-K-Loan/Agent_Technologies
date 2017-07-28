@@ -19,8 +19,8 @@ class Agent():
         self.won_last_auction =False #implies if won last auction
         self.distance_vector_calculated= False 
         self.bid_count= bid_count#how many bids will the agent send max
-        self.bid_vector = []
-
+        self.bid_vector = []#list of bids the agent is intrested to send
+        self.price_list_debug = ""
     def hello_agent(self):
         print("Hello from Agent!")
         
@@ -30,32 +30,19 @@ class Agent():
         self.auctioneer = auctioneer
         if self.won_last_auction == True:
             self.repeat_bid()#todo
-        print("recieved new price list!")
+       # print("recieved new price list!")
         if self.distance_vector_calculated == False :
             self.calculate_distance_vector(new_bundle_price_list)
-       # print("AG-ID:" +str(self.id) + " updated Distance Vector to " + self.print_distance_vector())
 
-
+        self.price_list_debug = new_bundle_price_list
         self.update_use_vector(new_bundle_price_list)
         #print("AG-ID:" +str(self.id) + " updated Use Vector to " + self.print_use_vector())        
-   
-        self.decide_on_bid(new_bundle_price_list)
-       # print("AG-ID:" +str(self.id) +"Sending bid for bundle:" + str(bid_list[0][0].name) + "which has  use " + str(self.use_vector[bid_list[0]]))
-
-
-#        print("AG-ID:" +str(self.id) +self.print_distance_vector())
-#        print("AG-ID:" +str(self.id) +self.print_use_vector())
-
-        print("AG-ID:" +str(self.id) + "sending bid for Bundle [ " + self.print_best_use() + " ] ")
+        self.update_bid_vector(new_bundle_price_list)
+        print("AG-ID:" +str(self.id) +"Sending bid for bundle:[" + str(self.bid_vector[0][0].name) + "] and for bid " +str (self.bid_vector[0][1]) +" and Use " + str(self.use_vector[self.bid_vector[0][0]]))
+        #print("DEBUG: should be " + str (new_bundle_price_list[self.bid_vector[0][0]]))
+        #print("and bid Vector is : " + str(self.print_bid_vector()))
         self.auctioneer.recv_bid_list(self, self.bid_vector)
         #self.send_bid_list(self, bid_list)#TODO if there are no Profitable bids, send Stop bidding Signal to aucitoneer
-        #print(str(new_price_list))
-        #for bundle in new_bundle_price_list:
-        #    print("AG-ID:" +str(self.id) + "  Bundle ["+ str(bundle.name) +  "]and price " +str (new_bundle_price_list[bundle]))
-        
-        #self.update_use_vecotr(new_bundle_price_list)
- 
-
 
     def recv_win_notification(self,new_bundle_price_list,bundle_won,auctioneer):#Notify API for Auctioneer, to tell Agent he won
         self.won_last_auction = True    
@@ -68,27 +55,28 @@ class Agent():
        
 
     def repeat_bid(self ):
-        print("AG-ID:" +str(self.id) + "sending bid for Bundle [ " + self.print_best_use() + " ] ")
+        print("AG-ID:" +str(self.id) +"Sending REPEATED bid for bundle:[" + str(self.bid_vector[0][0].name) + "] and for bid " +str (self.bid_vector[0][1]) +" and NOT UPDATED Use " + str(self.use_vector[self.bid_vector[0][0]]))
         self.auctioneer.recv_bid_list(self, self.bid_vector,)
 
-        pass
-
+        
             
 
 
-    def decide_on_bid(self,price_list):
+    def update_bid_vector(self,price_list):
         bid_list = []#list of most profitable bundles, [0] most profitable,[1] 2nd most profitable
-        best_use = [-(math.inf),"default"]# set to 0, if we only want to bid on things with profit >1, second element is the the bundle 
+        best_use = [0,"default"]# set to 0, if we only want to bid on things with profit >1, second element is the the bundle  or maybe -(math.inf)
         ret_dict = {}
-        for i in range(self.bid_count):
+        for i in range(self.bid_count):# how many bids to calculate, is described by i
             for bundle in self.use_vector:
                 if self.use_vector[bundle] > best_use[0] and bundle not in bid_list:
                     best_use[0] = self.use_vector[bundle]
                     best_use[1] = bundle
-            bid_list.append([best_use[1], price_list[bundle]])
-
+           # print("AG-ID:" +str(self.id) +"DEBUG: DECIDED ON BIDDING : " + str(self.price_list_debug[ best_use[1]])+ " for bundle" + str(best_use[1].name))
+           Bid(self,best_use[1],self.price_list_debug[ best_use[1]]) 
+           bid_list.append([best_use[1], self.price_list_debug[ best_use[1]]])#apending bid element , first ele is Bundle, second one is bid price
+            
             self.bid_vector = bid_list
-            #print("Calc best bundle : " + str(self.bid_vector[0][0].name) + "and for bid" +str (self.bid_vector[0][1]))
+           # print("Calc best bundle : " + str(self.bid_vector[0][0].name) + "and for bid " +str (self.bid_vector[0][1]) +"and Use " + str(self.use_vector[self.bid_vector[0][0]]))
             #ret_dict[bundle] = price_list[bundle]
 
     def calculate_distance_vector(self,bundle_price_list):
@@ -116,7 +104,7 @@ class Agent():
     def print_bid_vector(self):
         print_string =""
         for bundle in self.use_vector:#key are bundles
-            print_string+= str(bundle.name) + " U: " + str(self.use_vector[bundle] )+ "|"#values are the calculated Use Value for that key/bunde
+            print_string+="THIS FUNCTION IS BUGGY FIX ME!!!"+ str(bundle.name) + " U: " + str(self.use_vector[bundle] )+ "|"#values are the calculated Use Value for that key/bunde
         return print_string
 
 
@@ -163,4 +151,31 @@ class Agent():
         dist = abs(a[0] - b[0] )+ abs(a[1] -b[1])
         return dist
     
+    def print_price_list(self):
+        print_str= "AG-ID:" +str(self.id) +"Agent Pricelist is:: Prices are: "
+        for bundle in self.price_list_debug:
+            print_str += "Bundle[ " + bundle.name + " ] Price: " + str(self.price_list_debug[bundle])+"|"
+        print(print_str)
+        
+        
 
+
+class Bid():
+    instances = []
+    id_counter = 0
+    def __init__(self, agent, bundle, value):
+        self.id = Bid.id_counter
+        self.agent = agent
+        self.bundle = bundle
+        self.value = value
+        self.combo=false
+        agent.bids.append(self)
+        Bid.id_counter +=1
+        Bid.instances.append(self)
+
+    def __str__(self):
+
+        ret = "Agent ID: " + str(self.agent.id) + " wants: " + self.bundle.name + " for " + str(self.value)
+        return (ret)
+
+    __repr__ = __str__
