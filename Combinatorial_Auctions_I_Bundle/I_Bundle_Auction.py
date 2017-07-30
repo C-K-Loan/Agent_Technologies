@@ -1,6 +1,7 @@
 import numpy as np
 import math
 import copy
+#from I_Bundle_Agent import Bid 
 #from I_Bundle_Agent import Agent
 
 class Auction():
@@ -18,7 +19,7 @@ class Auction():
         self.bids_recieved = 0 
         self.epsilon = epsilon # by how much do we increase prices 
         self.iteration = 0
-        
+        self.combi_dict = {}
 
     def start_auction(self):
         
@@ -43,13 +44,15 @@ class Auction():
 
         if self.bids_recieved == len(self.agent_list):
             self.print_agents_bid_list()
+
             input("Iteration:"+ str(self.iteration)+"--------------------ALL bids Recieved,Press enter to evaluate... ---------------------------------")
             self.iteration +=1
   
             self.bids_recieved= 0
             #print("Auction: recieved all bids , deciding on winner....")
-            self.find_revenue_maximizing_distribution()
-           # self.calculate_new_price_list()
+            combo_dict = self.calculate_all_possible_distributions()
+            
+            # self.calculate_new_price_list()
             #self.print_price_list()
             #self.agents_bid_list = {}#reset bid list, so we forget bids. we should do this, since not every Agent must send a new bid!
             input("Iteration:"+ str(self.iteration-1)+"--------------------Press Enter to Notify Agents ---------------------------------")
@@ -67,12 +70,16 @@ class Auction():
    
 
        
-    def init_combo_dict(self):
+    def init_combo_dict(self,max_combo):
+        #@param max_combo -> The amout of empty lists , for combos we will initilize in combo dict
         #initalize combo_list to size 1, just every bid we recieved
         init_combo_dict = {}
         for agent_it in self.agents_bid_list:
             #print("ele is " + str(self.agents_bid_list[agent_it][0][0].name))
-            init_combo_dict[agent_it]= [[copy.copy(self.agents_bid_list[agent_it][0][0])]]#1 combo for every agent of size 1, his own bid
+            init_combo_dict[agent_it]= [([copy.copy(self.agents_bid_list[agent_it][0][0])],[agent_it])]#1 combo for every agent of size 1, his own bid
+            
+            for  i in range(max_combo):
+                init_combo_dict[agent_it].append(([],[]))#initilize empty list, for the inner list of combos
         return init_combo_dict
             
       
@@ -80,60 +87,122 @@ class Auction():
 
 
      
-    def find_compatible_bids_for_bundle_list(self,input_bundle_list):# given an N combo list, try to find N+1 Combo List
+    def find_compatible_bids_for_bundle(self,bundle, bundle_agents):
+        #@param bundle_agents, the agents that belong to the bundle we want combinations for
+        # given an N combo list, try to find N+1 Combo List
         #INPUT : list of compatible Bundles Size N  OUTPUT: List of compatible Bundles choosen self.agents_bid_list. So each Element in the Returnlist can make a compatible combo with input_bundle_list of size N+1 
         #IF no compatible bundles found, returns False! -> implies that we have tried out all possible combinations for that agent!
         combo_list = []
-        print("input Bundle is " + str (input_bundle) + " and len " + str (len(input_bundle)))
-        for input_bundle in input_bundle_list :#for every input bundle, we want to try out every bid we have recieved this Iteration
-            print("Auction: Looking for Compatibles Bids with : [" + str( input_bundle.name)+"]")
-            for agent_it in self.agents_bid_list:
-                print("Auction: Try Combo ["+ str(input_bundle.name) +"] and ["+ str(self.agents_bid_list[agent_it][0][0].name)+"]")    
-                    
-                if self.compatible(input_bundle,self.agents_bid_list[agent_it][0][0]):
-                    print("Was compatible!" )
-                    combo_list.append(self.agents_bid_list[agent_it])
+        print("input Bundle is " + str (bundle.name))
+        return_list = [] # A LIST WITH MERGED COMPATIBLE BUNDLES OF SIZE N+1
+        for agent_it in self.agents_bid_list:
+            print("Try to match with bundle " + str (self.agents_bid_list[agent_it][0][0].name))    
+            if self.compatible(bundle, self.agents_bid_list[agent_it][0][0]):
+                print("was compatible!")
+                combo_list.append((self.agents_bid_list[agent_it][0][0],[agent_it]))
         
-        
+        if combo_list != []: #only create new bundles if we found compatible stuff
+            for combo in combo_list :
+                new_b= bundle.merge_with_bundle(combo[0])
+                
+                return_list.append((new_b,bundle_agents+combo[1]))# we Append tupels (bundles|Agents belonging to bundle)
+                print("merged new bundle" + str(new_b.name))
+        input("continue?")    
         #TODO BUILD CORRECT COMBO LIST! 
         # I.E. If Given A , and Found Combos with B, C
         #Return List[AB, AC]
         # Next iteration
         # GIVEN List [AB]
-        
-        if combo_list == []: return False
-        else : return combo_list
+        if combo_list == []: return []
+        else : return return_list
         
  #    def recv_win_notification(self,new_bundle_price_list,bundle_won,auctioneer):#Notify API for Auctioneer, to tell Agent he won
       
             
-    def find_revenue_maximizing_distribution(self):
+    def calculate_all_possible_distributions(self):# We do this by calculate_all_possible_distributions
         #calc all possible combinations, check  revenue for all and pick most profitable and distribute evenly
         winner_list = []
         looser_list = []
-        combination_dict = copy.copy(self.init_combo_dict())# A Dict with Bidding Agents as Key and as Value a list of every posible combination , initialized with size 1 Combos(only 1 bid)
+        combination_dict = copy.copy(self.init_combo_dict(10))# A Dict with Bidding Agents as Key and as Value a list of every posible combination , initialized with size 1 Combos(only 1 bid)
         false_counter = 0
         combo_size= 0#
-        new_combos = {}
+        new_combos = []
+        x= 0 
+        overall_combo_count= 0
         for agent_it in self.agents_bid_list:# calculate all possible combinations compatible with agents who send in bids. each bid agent has a combo list which is a list of all possible combination which are compatible
             print("Auction: Calculating Combos for Bidder Agent-ID-" +str(agent_it.id))
             #print("Combo dict for this agent is: " + str(combination_dict[agent_it][0]))
-            new_combos[combo_size] = copy.copy(combination_dict[agent_it][0])#initially , we only have 1 combo, the bid of each agent
+            #new_combos[combo_size] = copy.copy(combination_dict[agent_it][0])#initially , we only have 1 combo, the bid of each agent
             #print("new comboat [0] is " + str(new_combos[0]))
 
-            while (new_combos[combo_size] != False):# TODO, stop if no more new combos, for agent_IT
+            while (len(combination_dict[agent_it][combo_size][0]) != 0):# TODO, stop if no more new combos, for agent_IT
                 print("Calculating Combos for Input Size : " + str(combo_size +1))
-                for combo in new_combos[combo_size]:
-                    new_combos[combo_size+1] = self.find_compatible_bids_for_bundle_list(new_combos[combo_size])#
-                    combination_dict[agent_it].append(new_combos)# append a list of combos_size+1 bundles
-                    combo_size += 1
+                bid = self.agents_bid_list[agent_it][0][1]
+                overall_combo_count+=1
+                for bundle in combination_dict[agent_it][combo_size][0]:
+                    print("Searching Combos for : AG-ID-"+ str(agent_it.id) + "and Bundle [" +str(bundle.name)+ "]")
+                    new_combos= self.find_compatible_bids_for_bundle(bundle,[agent_it])# returns list of combos with input Bundle and all other compatible bundles which are not already in the combo
+                    combination_dict = self.update_combination_dict(combination_dict,agent_it,new_combos,combo_size)
+                    #old_combos = combination_dict[agent_it][combo_size+1][0]
+                    #print("old combos are " + str(old_combos))
+                    #print("new combos are " + str (new_combos))
+                   # new_combos += old_combos[0]
+                    #combination_dict[agent_it][combo_size+1][0] += new_combos[0]
+             #       print("GONNA CHECK: " + str(combination_dict[agent_it][combo_size][0]))
+                    x+=1                    
+                combo_size += 1
+                x=0
             combo_size = 0
             
-        print("AUCTION: DONE COMPUTING ALL COMBINATIONS!")
+        print("AUCTION: DONE COMPUTING ALL COMBINATIONS! Amount of Combos found: " + str(overall_combo_count))
+        self.print_combo_dict(combination_dict)
+        print("startung to Calculate Prices for All combos..")
+              
         
+        return combination_dict
+
+    def find_biggest_revenue_in_combo_dict(self,combo_dict):
+        combo_size = 0
+        max_rev = -(math.inf)
         
 
 
+
+
+
+    def print_combo_dict(self,combo_dict) :
+        combo_size = 0
+        bundle_str= ""
+        agent_str=""
+        for agent_it in self.agents_bid_list:
+            print("for agent id : " +str(agent_it.id))
+            while(len(combo_dict[agent_it][combo_size][0]) != 0 ):
+                for bundle in combo_dict[agent_it][combo_size][0]:
+                    bundle_str+= "|"+str(bundle.name)+"|"
+                for agent_it in combo_dict[agent_it][combo_size][1]:
+                    agent_str += "|"+str(agent_it.id)+"|"
+                print("For Combo size " + str(combo_size)+" Found Combos and Agents ")
+                combo_size +=1
+                print(str(bundle_str))
+                print(str(agent_str))
+                bundle_str = ""
+                agent_str = ""
+            combo_size=0
+            
+    def update_combination_dict(self,combination_dict,agent_it,new_combos,combosize):
+        for combo in new_combos:
+            #print("cmbo is" + str(combo))
+            #print("combo dict 0 is " + str(combination_dict[agent_it][combosize+1][0]))
+            
+            #print("combo dict 1 is " + str(combination_dict[agent_it][combosize+1][1]))
+            combination_dict[agent_it][combosize+1][0].append(combo[0])#update bundle
+            for ele in combo[1]:
+                combination_dict[agent_it][combosize+1][1].append(ele)#update agents
+            #print("AFTER UPDATE : " )
+            #print("combo dict 0 is " + str(combination_dict[agent_it][combosize+1][0]))
+            
+            #print("combo dict 1 is " + str(combination_dict[agent_it][combosize+1][1]))
+        return combination_dict
 
     def print_bid_list(self,bid_list):
         for bundle in bid_list:
@@ -176,7 +245,9 @@ class Auction():
     def compatible(self, b1, b2):
        # print ("comparing bundle" + str(b1.name))
         #print ("with bundle" + str(b2.name))
-        if (b1.jobs in b2.jobs) or (b2.jobs in b1.jobs) |(b1.type == b2.type):
+       # print (str(b1.name) + str(b2.name) + str((str(b2.n) ame+ str(b1.jobs))))
+
+        if (str(b1.name) in str(b2.name)) or (str(b2.name) in str(b1.name)) :
             return False
         else: 
             #print(b1.name + " and " + b2.name +" compatible")
