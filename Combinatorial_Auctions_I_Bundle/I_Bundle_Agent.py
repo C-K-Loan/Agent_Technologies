@@ -72,10 +72,10 @@ class Agent():
                     best_use[0] = self.use_vector[bundle]
                     best_use[1] = bundle
            # print("AG-ID:" +str(self.id) +"DEBUG: DECIDED ON BIDDING : " + str(self.price_list_debug[ best_use[1]])+ " for bundle" + str(best_use[1].name))
-           Bid(self,best_use[1],self.price_list_debug[ best_use[1]]) 
-           bid_list.append([best_use[1], self.price_list_debug[ best_use[1]]])#apending bid element , first ele is Bundle, second one is bid price
+        Bid(self,best_use[1],self.price_list_debug[ best_use[1]]) 
+        bid_list.append([best_use[1], self.price_list_debug[ best_use[1]]])#apending bid element , first ele is Bundle, second one is bid price
             
-            self.bid_vector = bid_list
+        self.bid_vector = bid_list
            # print("Calc best bundle : " + str(self.bid_vector[0][0].name) + "and for bid " +str (self.bid_vector[0][1]) +"and Use " + str(self.use_vector[self.bid_vector[0][0]]))
             #ret_dict[bundle] = price_list[bundle]
 
@@ -168,8 +168,8 @@ class Bid():
         self.agent = agent
         self.bundle = bundle
         self.value = value
-        self.combo=false
-        agent.bids.append(self)
+        self.combo=False
+#        agent.bids.append(self)
         Bid.id_counter +=1
         Bid.instances.append(self)
 
