@@ -36,17 +36,58 @@ class Auction():
     def sealed_bid_phase(self):
         agents_bid_dict = {}
         print("Sealed Bid Phase: ")
-        self.agents_done = 0
+        self.agents_done = 2
         for agent in self.agent_list:
-            agent.final_bids(self)
+            pass #agent.final_bids(self)
         while self.agents_done != len(self.agent_list):
             print("LOOOL NOT DONE YET")
         for agent in self.agent_list:
             for bundle in agent.own_prices:
                 agents_bid_dict[Agent] = (bundle, agent.own_prices[bundle])
 
-        pass
+        #revenue
+        #combos hast bundlelist and price
+        bundle_winner = {}
+        combos = []
+        best_sum = 0
+        for a in self.agent_list:
+            for abundle in a.own_prices:
+                #if a.own_prices[abundle] > best_sum:
+                    #combos.append(([abundle, a], a.own_prices[abundle]))
+                    #best_sum = a.own_prices[abundle]
+                    for b in self.agent_list:
+                        if a != b:
+                            for bbundle in b.own_prices:
 
+                                if abundle.compatible(bbundle):
+
+                                    sum = a.own_prices[abundle] + b.own_prices[bbundle]
+                                    if sum > best_sum:
+                                        combos.append(([abundle,a,bbundle,b], sum))
+                                        best_sum = sum
+                                    for c in self.agent_list:
+                                        if c != a and c != b:
+                                            for cbundle in c.own_prices:
+                                                if abundle.compatible(cbundle) and bbundle.compatible(cbundle):
+                                                    sum = a.own_prices[abundle] + b.own_prices[bbundle] + b.own_prices[cbundle]
+                                                    if sum > best_sum:
+                                                        combos.append(([abundle, a, bbundle, b, cbundle, c], sum))
+                                                        best_sum = sum
+
+
+        if len(combos[-1][0]) == 4:
+            bundle_winner[combos[-1][0][0]] = combos[-1][0][1]
+            bundle_winner[combos[-1][0][2]] = combos[-1][0][3]
+            for b in bundle_winner:
+                print("Agent " + str(bundle_winner[b].id) +  " won bundle " + b.name + " with price " +  str(bundle_winner[b].own_prices[b]) )
+            print("summed cost" + str(combos[-1][1]))
+        if len(combos[-1][0]) == 6:
+            bundle_winner[combos[-1][0][0]] = combos[-1][0][1]
+            bundle_winner[combos[-1][0][2]] = combos[-1][0][3]
+            bundle_winner[combos[-1][0][4]] = combos[-1][0][5]
+            for b in bundle_winner:
+                print("Agent " + str(bundle_winner[b].id) +  " won bundle " + b.name + " with price " +  str(bundle_winner[b].own_prices[b]) )
+            print("summed cost: " + combos[-1][1])
 
     def start_clock_phase(self):
         self.done = False

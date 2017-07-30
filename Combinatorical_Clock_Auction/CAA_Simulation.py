@@ -41,6 +41,21 @@ class Bundle():
 
     __repr__ = __str__
 
+    def compatible(self, bundle_to_compare):
+        comp_bool = True
+
+        for job in bundle_to_compare.jobs:
+            for job_self in self.jobs:
+                if (job.name in job_self.name):
+                    comp_bool = False
+
+        return comp_bool
+
+    def merge_with_bundle(self, bundle_to_merge):  # and returns the new one!
+        # create a new Bundle,  ASSUME BOTH BUNDLES ARE OF SAME TYPE AND  bundle_to_merge != self, not merging with self!
+        new_bundle = Bundle(self.name + " and " + bundle_to_merge.name, self.type, self.jobs + bundle_to_merge.jobs)
+        return new_bundle
+
 class Job():
     # location in the World, with value and Type
     instances = []

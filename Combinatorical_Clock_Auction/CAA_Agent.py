@@ -26,6 +26,7 @@ class Agent():
         self.bids = []
         self.bid_vector = []
         self.bid_type = ""
+        self.final = []
         Agent.instances.append(self)
         Agent.id_counter += 1
 
