@@ -31,7 +31,11 @@ class Bundle():
             value += int(job.value)
         return value
    
-    
+    def merge_with_bundle(self,bundle_to_merge):#and returns the new one!
+        #create a new Bundle,  ASSUME BOTH BUNDLES ARE OF SAME TYPE AND  bundle_to_merge != self, not merging with self!
+        new_bundle = Bundle(self.name +" and "+ bundle_to_merge.name, self.type, self.jobs + bundle_to_merge.jobs)        
+        return new_bundle
+        
 class Job():
     #location in the World, with value and Type
     instances = []
@@ -76,7 +80,7 @@ def init_world():
     bundle_0 = Bundle( "Cat 0","Cat",[cat0])
     bundle_1 = Bundle( "Cat 1","Cat",[cat1])
     bundle_2 = Bundle( "Cat 0 and Cat 1","Cat",[cat0,cat1])
-    bundle_3 = Bundle( "dog0","Dog",[dog0])
+    bundle_3 = Bundle( "Dog0","Dog",[dog0])
 
 
 
