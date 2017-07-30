@@ -76,7 +76,7 @@ class Auction():
         init_combo_dict = {}
         for agent_it in self.agents_bid_list:
             #print("ele is " + str(self.agents_bid_list[agent_it][0][0].name))
-            init_combo_dict[agent_it]= [([copy.copy(self.agents_bid_list[agent_it][0][0])],[agent_it])]#1 combo for every agent of size 1, his own bid
+            init_combo_dict[agent_it]= [([copy.copy(self.agents_bid_list[agent_it][0][0])],[[agent_it]])]#1 combo for every agent of size 1, his own bid
             
             for  i in range(max_combo):
                 init_combo_dict[agent_it].append(([],[]))#initilize empty list, for the inner list of combos
@@ -157,51 +157,97 @@ class Auction():
         print("AUCTION: DONE COMPUTING ALL COMBINATIONS! Amount of Combos found: " + str(overall_combo_count))
         self.print_combo_dict(combination_dict)
         print("startung to Calculate Prices for All combos..")
-              
-        
+        revenue_vector = self.calculate_revenue_vector(combination_dict)      
+        print(revenue_vector)
         return combination_dict
+    
+    
+    def find_biggest_revenue_in_revenue_vector(self,rev_vecotr)
 
-    def find_biggest_revenue_in_combo_dict(self,combo_dict):
-        combo_size = 0
-        max_rev = -(math.inf)
+    def get_revenue_for_agent_list(self,ag_list):#given a list of agents, returns the sum of all their bids
+        rev_sum = 0
         
+        for ag in ag_list :
+            rev_sum += self.price_list[self.agents_bid_list[ag][0][0]]
+        return rev_sum
 
+                    
+                    
+    def calculate_revenue_vector(self,combo_dict):#calculate a list with tupels of every combination, with the value of the Tupel
+        combo_size = 0
+        bundle_str= ""
+        agent_str=""
+        x= 0#für das wievielte bundle müssen wir eine Agentenliste besorgen? beschreibt x!
+        rev_vector = []
+        revenue_ele = (1,2,3)#pos 0 is bundle, pos 1 is revenue, pos 2 are Agents 
+        ag_list = []
+        for agent_it in self.agents_bid_list:
+            while(len(combo_dict[agent_it][combo_size][0]) != 0 ):
+                for bundle in combo_dict[agent_it][combo_size][0]:
+                    revenue_ele[0]=bundle
+                    for agent_bidder in combo_dict[agent_it][combo_size][1][x]:
+                        ag_list.append(agent_bidder)
+                    revenue_ele[2]= ag_list
+                    revenue_ele[1] = self.get_revenue_for_agent_list(ag_list)
+                    x+=1
+                    rev_vector.append(revenue_ele)
+                    ag_list = []
 
-
-
+                combo_size +=1
+                x=0
+            combo_size=0
+        return rev_vector
 
     def print_combo_dict(self,combo_dict) :
         combo_size = 0
         bundle_str= ""
         agent_str=""
+        x= 0#für das wievielte bundle müssen wir eine Agentenliste besorgen? beschreibt x!
         for agent_it in self.agents_bid_list:
             print("for agent id : " +str(agent_it.id))
             while(len(combo_dict[agent_it][combo_size][0]) != 0 ):
                 for bundle in combo_dict[agent_it][combo_size][0]:
                     bundle_str+= "|"+str(bundle.name)+"|"
-                for agent_it in combo_dict[agent_it][combo_size][1]:
-                    agent_str += "|"+str(agent_it.id)+"|"
-                print("For Combo size " + str(combo_size)+" Found Combos and Agents ")
+                    #print("DEBUG:" +str(combo_dict[agent_it][combo_size][1][x]))
+                    for agent_bidder in combo_dict[agent_it][combo_size][1][x]:
+                        #print("Found AGENT!"+str(agent_bidder.id))
+                        agent_str += "|"+str(agent_bidder.id)+"|"
+                    print("For Combo size " + str(combo_size)+" Found Combo"+ bundle_str +" and Agents" + str(agent_str))
+                    #print("Bunlde Amount is "+ str(len(combo_dict[agent_it][combo_size][0]))+ "and aglist amount is " + str(combo_dict[agent_it][combo_size][1]))
+                    bundle_str = ""
+                    agent_str = ""
+                    x+=1
                 combo_size +=1
-                print(str(bundle_str))
-                print(str(agent_str))
-                bundle_str = ""
-                agent_str = ""
+                x=0
+            combo_size=0
+
+            print()
+            print()
+
+
             combo_size=0
             
     def update_combination_dict(self,combination_dict,agent_it,new_combos,combosize):
         for combo in new_combos:
+            app_list=[]
             #print("cmbo is" + str(combo))
             #print("combo dict 0 is " + str(combination_dict[agent_it][combosize+1][0]))
             
             #print("combo dict 1 is " + str(combination_dict[agent_it][combosize+1][1]))
             combination_dict[agent_it][combosize+1][0].append(combo[0])#update bundle
             for ele in combo[1]:
-                combination_dict[agent_it][combosize+1][1].append(ele)#update agents
-            #print("AFTER UPDATE : " )
-            #print("combo dict 0 is " + str(combination_dict[agent_it][combosize+1][0]))
+                app_list.append(ele)
+            #print("updating Dict with" + str(app_list))
+            combination_dict[agent_it][combosize+1][1].append(app_list)#update agents
+            print("AFTER UPDATE : " )
+            print("combo dict 0 is " + str(combination_dict[agent_it][combosize+1][0][-1].name))
+            for ag in app_list:
+                print("ID'S ARE:" +str(ag.id))
+            #print("combo dict 1 is " + str(combination_dict[agent_it][combosize+1][1][-1][-1]))
+            #print("combo dict 2 is " + str(combination_dict[agent_it][combosize+1][1][-1]))
+            #print("combo dict 3 is " + str(combination_dict[agent_it][combosize+1][1]))
+            #print("combo dict 4 is " + str(combination_dict[agent_it][combosize+1][1][0][0]))
             
-            #print("combo dict 1 is " + str(combination_dict[agent_it][combosize+1][1]))
         return combination_dict
 
     def print_bid_list(self,bid_list):
