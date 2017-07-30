@@ -31,6 +31,16 @@ class Bundle():
             value += int(job.value)
         return value
    
+    def compatible (self, bundle_to_compare):
+        comp_bool = True
+        
+        for job in bundle_to_compare.jobs:
+            for job_self in self.jobs:
+                if (job.name in job_self.name):
+                    comp_bool = False
+        
+        return comp_bool
+    
     def merge_with_bundle(self,bundle_to_merge):#and returns the new one!
         #create a new Bundle,  ASSUME BOTH BUNDLES ARE OF SAME TYPE AND  bundle_to_merge != self, not merging with self!
         new_bundle = Bundle(self.name +" and "+ bundle_to_merge.name, self.type, self.jobs + bundle_to_merge.jobs)        
@@ -41,8 +51,9 @@ class Job():
     instances = []
     id_counter = 0
 
-    def __init__(self, location, value, job_type):
+    def __init__(self, location, value, job_type, name):
         self.type = job_type
+        self.name = name
         self.id = Job.id_counter
         self.location = location
         self.value = value
@@ -66,23 +77,27 @@ class Job():
 #initialize all objects
 def init_world():
     #location, Capacity    
-    agent0= Agent((0,0),1,1) 
-    agent1= Agent((0,6),1,1)
-    agent2= Agent((6,0),1,1)
+    agent0= Agent((5,0),1,1) 
+    agent1= Agent((5,10),1,1)
+    agent2= Agent((10,5),1,1)
     
     
     #job Location, Value, type
-    cat0 = Job((1,5),15,"Cat")
-    cat1 = Job((2,2),10,"Cat")
-    dog0 = Job((5,5),20,"Dog")
+    #cat0 = Job((3,3),15,"A")
+    #cat1 = Job((6,2),10,"Cat")
+    A = Job((5,8),10,"Dog","A")
+    B = Job((5,2),10,"Dog","B")
+    C = Job((5,5),10,"Cat","C")
 
     #bundle Name, type, Jobs in bundle
-    bundle_0 = Bundle( "Cat 0","Cat",[cat0])
-    bundle_1 = Bundle( "Cat 1","Cat",[cat1])
-    bundle_2 = Bundle( "Cat 0 and Cat 1","Cat",[cat0,cat1])
-    bundle_3 = Bundle( "Dog0","Dog",[dog0])
-
-
+    #bundle_0 = Bundle( "Cat0","Cat",[cat0])
+    #bundle_1 = Bundle( "Cat 1","Cat",[cat1])
+    #bundle_2 = Bundle( "Cat 0 and Cat 1","Cat",[cat0,cat1])
+    #bundle_3 = Bundle( "Dog0","Dog",[dog0])
+    bundle_0 = Bundle("A","Dog",[A])
+    bundle_1 = Bundle("B","Dog",[B])
+    bundle_2 = Bundle("A and B","Dog",[A,B])
+    bundle_3 = Bundle("C","Cat", [C])
 
     bundle_list = [bundle_0,bundle_1,bundle_2,bundle_3]
     agent_list = [agent0,agent1,agent2]
