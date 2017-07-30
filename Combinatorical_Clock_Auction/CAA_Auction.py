@@ -52,16 +52,17 @@ class Auction():
         best_sum = 0
         for a in self.agent_list:
             for abundle in a.own_prices:
+                #sum = a.own_prices[abundle] -1
                 #if a.own_prices[abundle] > best_sum:
-                    #combos.append(([abundle, a], a.own_prices[abundle]))
-                    #best_sum = a.own_prices[abundle]
+                    #combos.append(([abundle, a], sum))
+                    #best_sum = sum
                     for b in self.agent_list:
                         if a != b:
                             for bbundle in b.own_prices:
 
                                 if abundle.compatible(bbundle):
 
-                                    sum = a.own_prices[abundle] + b.own_prices[bbundle]
+                                    sum = a.own_prices[abundle] + b.own_prices[bbundle] - 2
                                     if sum > best_sum:
                                         combos.append(([abundle,a,bbundle,b], sum))
                                         best_sum = sum
@@ -69,7 +70,7 @@ class Auction():
                                         if c != a and c != b:
                                             for cbundle in c.own_prices:
                                                 if abundle.compatible(cbundle) and bbundle.compatible(cbundle):
-                                                    sum = a.own_prices[abundle] + b.own_prices[bbundle] + b.own_prices[cbundle]
+                                                    sum = a.own_prices[abundle] + b.own_prices[bbundle] + b.own_prices[cbundle] - 3
                                                     if sum > best_sum:
                                                         combos.append(([abundle, a, bbundle, b, cbundle, c], sum))
                                                         best_sum = sum
@@ -79,14 +80,14 @@ class Auction():
             bundle_winner[combos[-1][0][0]] = combos[-1][0][1]
             bundle_winner[combos[-1][0][2]] = combos[-1][0][3]
             for b in bundle_winner:
-                print("Agent " + str(bundle_winner[b].id) +  " won bundle " + b.name + " with price " +  str(bundle_winner[b].own_prices[b]) )
+                print("Agent " + str(bundle_winner[b].id) +  " won bundle " + b.name + " with price " +  str(bundle_winner[b].own_prices[b] -1) )
             print("summed cost" + str(combos[-1][1]))
         if len(combos[-1][0]) == 6:
             bundle_winner[combos[-1][0][0]] = combos[-1][0][1]
             bundle_winner[combos[-1][0][2]] = combos[-1][0][3]
             bundle_winner[combos[-1][0][4]] = combos[-1][0][5]
             for b in bundle_winner:
-                print("Agent " + str(bundle_winner[b].id) +  " won bundle " + b.name + " with price " +  str(bundle_winner[b].own_prices[b]) )
+                print("Agent " + str(bundle_winner[b].id) +  " won bundle " + b.name + " with price " +  str(bundle_winner[b].own_prices[b] - 1) )
             print("summed cost: " + combos[-1][1])
 
     def start_clock_phase(self):

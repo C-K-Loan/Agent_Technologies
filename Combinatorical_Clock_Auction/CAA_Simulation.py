@@ -139,7 +139,7 @@ def exists2(job1, job2, job3):
 def init_world():
 
     init_güter((2,2), 5, "Cat", 2)
-    init_güter((4,4), 5, "Cat", 2)
+    init_güter((3,3), 5, "Cat", 2)
     init_güter((0,4), 3, "Dog", 1)
     init_bundles()
 
