@@ -29,8 +29,23 @@ class Auction():
 
     def start_auction(self):
         self.start_clock_phase()
-
         self.print_prices()
+        self.sealed_bid_phase()
+
+
+    def sealed_bid_phase(self):
+        agents_bid_dict = {}
+        print("Sealed Bid Phase: ")
+        self.agents_done = 0
+        for agent in self.agent_list:
+            agent.final_bids(self)
+        while self.agents_done != len(self.agent_list):
+            print("LOOOL NOT DONE YET")
+        for agent in self.agent_list:
+            for bundle in agent.own_prices:
+                agents_bid_dict[Agent] = (bundle, agent.own_prices[bundle])
+
+        pass
 
 
     def start_clock_phase(self):
@@ -72,6 +87,9 @@ class Auction():
             print("Auction: Price for Bundle[ " + bundle.name + " ] is " + str(self.prices[bundle]))
     def print_agent_prices(self):
         for agent in self.agent_list:
-            print("   Prices for agent " +str(agent.id) + ":")
+            print(" Eligibility: " + str(agent.eligibility) + "   Prices for agent " +str(agent.id) + ":")
             for bundle in agent.own_prices:
-                print("      " +bundle.name + " with Value " + str(agent.own_prices[bundle]) + " Eligibility: " + str(agent.eligibility))
+                print("      " +bundle.name + " with Value " + str(agent.own_prices[bundle]))
+    def chose_winners(self):
+        for a in self.agent_list:
+            a.print_bids()

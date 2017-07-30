@@ -73,54 +73,88 @@ def init_güter(location, value, job_type, amount):
 
 def init_bundles():
     for job in Job.instances:
-
+        if not exists0(job):
+            Bundle(job.name, job.type, [job])
+        #print("job: " + job.name)
         for jo in Job.instances:
-
-            if job.type == jo.type and different([job, jo]) and  :
-                print("if FALL")
+            #print("with: " + jo.name)
+            if job.type == jo.type and different([job, jo]) and not exists(job, jo) :
                 Bundle(job.name + " and " + jo.name, job.type, [job, jo])
+            for j in Job.instances:
+                if job.type == jo.type and jo.type == j.type and different([job,jo,j]) and not exists2(job, jo, j):
+                    Bundle(job.name + " and " + jo.name + " and " + j.name, job.type, [job, jo, j])
 
-
-def same(job1,job2):
+def exists0(job):
+    for bundle in Bundle.instances:
+        if len(bundle.jobs) == 1:
+            if bundle.name == job.name:
+                return True
+    return False
+def exists(job1,job2):
     for bundle in Bundle.instances:
         if len(bundle.jobs) == 2:
-            pass
+            new_b_name = job2.name + " and " + job1.name
+            #print("bundle: "+ bundle.name + " and new bundle name: " + job2.name + " and " + job1.name )
+            if new_b_name == bundle.name:
+                return True
+    return False
+def exists2(job1, job2, job3):
+    for bundle in Bundle.instances:
+        if len(bundle.jobs) == 3:
+            new_b_name = job1.name + " and " + job3.name + " and " + job2.name
+            if new_b_name == bundle.name:
+                return True
+            new_b_name = job2.name + " and " + job3.name + " and " + job1.name
+            if new_b_name == bundle.name:
+                return True
+            new_b_name = job2.name + " and " + job1.name + " and " + job3.name
+            if new_b_name == bundle.name:
+                return True
+            new_b_name = job3.name + " and " + job1.name + " and " + job2.name
+            if new_b_name == bundle.name:
+                return True
+            new_b_name = job3.name + " and " + job2.name + " and " + job1.name
+            if new_b_name == bundle.name:
+                return True
+    return False
             #if Bundle.jobs[0].name=
 
 
 # initialize all objects
 def init_world():
 
-    # init_güter((2,2), 5, "Cat", 2)
-    # init_güter((3,3), 5, "Cat", 2)
-    # init_bundles()
+    init_güter((2,2), 5, "Cat", 2)
+    init_güter((4,4), 5, "Cat", 2)
+    init_güter((0,4), 3, "Dog", 1)
+    init_bundles()
 
     for bundle in Bundle.instances:
         print(bundle)
+    print("len bundle instances: " + str(len(Bundle.instances)))
     # location, Capacity
     agent_1 = Agent((0, 0), 3, 3)
     agent_2 = Agent((5, 5), 3, 3)
     agent_3 = Agent((4, 5), 3, 3)
 
     # job Location, Value,
-    gut_0 = Job((2, 2), 15, "Cat", "gut_0")
-    gut_1 = Job((2, 2), 5, "Cat", "gut_1" )
-    gut_2 = Job((3, 3), 5, "Cat", "gut_2")
-    gut_3 = Job((3, 3), 5, "Cat", "gut_3")
-    dog0 = Job((5, 5), 0, "Dog", "dog_0")
+    # gut_0 = Job((2, 2), 15, "Cat", "gut_0")
+    # gut_1 = Job((2, 2), 5, "Cat", "gut_1" )
+    # gut_2 = Job((3, 3), 5, "Cat", "gut_2")
+    # gut_3 = Job((3, 3), 5, "Cat", "gut_3")
+    # dog0 = Job((5, 5), 0, "Dog", "dog_0")
+    #
+    # # bundle Name, type, Jobs in bundle
+    # bundle_0 = Bundle("gut 1", "Cat", [gut_1])
+    # bundle_1 = Bundle("gut 2", "Cat", [gut_2])
+    # bundle_2 = Bundle("gut 1 und 2", "Cat", [gut_1, gut_2])
+    # bundle_3 = Bundle("gut dog0", "Dog", [dog0])#
+    # bundle_4 = Bundle("gut 0 und 1", "Cat", [gut_1, gut_0])
+    # bundle_5 = Bundle("gut 2 und 3", "Cat", [gut_2, gut_3])
+    # bundle_6 = Bundle("gut 0", "Cat", [gut_0])
+    # bundle_7 = Bundle("gut 3", "Cat", [gut_3])
 
-    # bundle Name, type, Jobs in bundle
-    bundle_0 = Bundle("gut 1", "Cat", [gut_1])
-    bundle_1 = Bundle("gut 2", "Cat", [gut_2])
-    bundle_2 = Bundle("gut 1 und 2", "Cat", [gut_1, gut_2])
-    bundle_3 = Bundle("gut dog0", "Dog", [dog0])#
-    bundle_4 = Bundle("gut 0 und 1", "Cat", [gut_1, gut_0])
-    bundle_5 = Bundle("gut 2 und 3", "Cat", [gut_2, gut_3])
-    bundle_6 = Bundle("gut 0", "Cat", [gut_0])
-    bundle_7 = Bundle("gut 3", "Cat", [gut_3])
 
-
-    bundle_list = [bundle_0, bundle_1, bundle_2, bundle_3, bundle_4, bundle_5, bundle_6, bundle_7]
+    #bundle_list = [bundle_0, bundle_1, bundle_2, bundle_3, bundle_4, bundle_5, bundle_6, bundle_7]
     bundle_list = Bundle.instances
     agent_list = [agent_1, agent_2]
     auction = Auction(bundle_list, agent_list, 1)

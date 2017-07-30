@@ -82,7 +82,32 @@ class Agent():
         # calculate using  |x1-x2| + |y1-y2| , for location a to location b (tuples (x,y))
         dist = abs(a[0] - b[0] )+ abs(a[1] -b[1])
         return dist
+    def final_bids(self, auction):
+        #generate XOR bids
+        self.distance_vector = {}
+        self.use_vector = {}
+        self.capacity = self.max_capacity
+        for bundle in self.own_prices:
+            print("Auction: Price for Bundle[ " + bundle.name + " ] is " + str(self.own_prices[bundle]))
+        print("another agent")
+        prices_copy = copy.copy(self.own_prices)
 
+        self.calculate_distance_vector(prices_copy)
+        self.update_use_vector(prices_copy)
+
+        sorted_uses = sorted(self.use_vector.items(), key=lambda x: x[1], reverse=True)
+        #self.print_sorted_uses(sorted_uses)
+        for i in range (len(sorted_uses)):
+            if len(sorted_uses) < 1:
+                break
+            best_bundle = sorted_uses[i][0]
+            best_use = sorted_uses[i][1]
+            self.bid_type = best_bundle.jobs[0].type
+            if best_use > 0:
+                self.bids.append(Bid(self, best_bundle, prices_copy[best_bundle] ))
+
+
+        auction.agents_done += 1
     def set_bids(self,prices):
         prices_copy = copy.copy(prices)
         self.calculate_distance_vector(prices_copy)
@@ -126,8 +151,10 @@ class Agent():
                 self.calculate_distance_vector(prices_copy)
                 self.update_use_vector(prices_copy)
             else:
+                print("ELIGIBILITY DECREASED")
                 self.eligibility -= 1
                 break
+        self.bid_type = ""
         self.location = self.start_location
         #print (sorted_uses)
         #sorted_bundles = sorted(prices.items(), key=lambda x: x[1])
@@ -154,7 +181,7 @@ class Agent():
         return print_string
     def print_bids(self):
         for bid in self.bids:
-            print("AGENT ID, BUNDLE, VALUE: "+ bid.agent + ", " + bid.bundle.name + ", " + bid.value)
+            print("AGENT ID, BUNDLE, VALUE: "+ str(bid.agent.id) + ", " + bid.bundle.name + ", " + str(bid.value))
 class Bid():
     instances = []
     id_counter = 0
