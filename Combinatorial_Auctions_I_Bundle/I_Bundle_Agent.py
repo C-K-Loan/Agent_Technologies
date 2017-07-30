@@ -21,6 +21,8 @@ class Agent():
         self.bid_count= bid_count#how many bids will the agent send max
         self.bid_vector = []#list of bids the agent is intrested to send
         self.price_list_debug = ""
+        self.no_more_profitable_bundle = False
+
     def hello_agent(self):
         print("Hello from Agent!")
         
@@ -38,10 +40,12 @@ class Agent():
         self.update_use_vector(new_bundle_price_list)
         #print("AG-ID:" +str(self.id) + " updated Use Vector to " + self.print_use_vector())        
         self.update_bid_vector(new_bundle_price_list)
-        print("AG-ID:" +str(self.id) +"Sending bid for bundle:[" + str(self.bid_vector[0][0].name) + "] and for bid " +str (self.bid_vector[0][1]) +" and Use " + str(self.use_vector[self.bid_vector[0][0]]))
-        #print("DEBUG: should be " + str (new_bundle_price_list[self.bid_vector[0][0]]))
-        #print("and bid Vector is : " + str(self.print_bid_vector()))
-        self.auctioneer.recv_bid_list(self, self.bid_vector)
+        if self.no_more_profitable_bundle == False:
+            print("AG-ID:" +str(self.id) +"Sending bid for bundle:[" + str(self.bid_vector[0][0].name) + "] and for bid " +str (self.bid_vector[0][1]) +" and Use " + str(self.use_vector[self.bid_vector[0][0]]))
+            self.auctioneer.recv_bid_list(self, self.bid_vector,True)
+        else :
+            print("AG-ID:"  +str(self.id) + "STOPPING BIDDING! NO MORE PROFITABLE BUNDLES LEFT!")
+            self.auctioneer.recv_leaving_notification(self)
         #self.send_bid_list(self, bid_list)#TODO if there are no Profitable bids, send Stop bidding Signal to aucitoneer
 
     def recv_win_notification(self,new_bundle_price_list,bundle_won,auctioneer):#Notify API for Auctioneer, to tell Agent he won
@@ -56,7 +60,7 @@ class Agent():
 
     def repeat_bid(self ):
         print("AG-ID:" +str(self.id) +"Sending REPEATED bid for bundle:[" + str(self.bid_vector[0][0].name) + "] and for bid " +str (self.bid_vector[0][1]) +" and NOT UPDATED Use " + str(self.use_vector[self.bid_vector[0][0]]))
-        self.auctioneer.recv_bid_list(self, self.bid_vector,)
+        self.auctioneer.recv_bid_list(self, self.bid_vector,True)
 
         
             
@@ -71,6 +75,9 @@ class Agent():
                 if self.use_vector[bundle] > best_use[0] and bundle not in bid_list:
                     best_use[0] = self.use_vector[bundle]
                     best_use[1] = bundle
+        if best_use[1] == "default":
+            self.no_more_profitable_bundle = True
+            return
            # print("AG-ID:" +str(self.id) +"DEBUG: DECIDED ON BIDDING : " + str(self.price_list_debug[ best_use[1]])+ " for bundle" + str(best_use[1].name))
         Bid(self,best_use[1],self.price_list_debug[ best_use[1]]) 
         bid_list.append([best_use[1], self.price_list_debug[ best_use[1]]])#apending bid element , first ele is Bundle, second one is bid price
