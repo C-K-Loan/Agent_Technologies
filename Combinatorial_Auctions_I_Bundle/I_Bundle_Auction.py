@@ -179,18 +179,15 @@ class Auction():
         agent_str=""
         x= 0#für das wievielte bundle müssen wir eine Agentenliste besorgen? beschreibt x!
         rev_vector = []
-        revenue_ele = (1,2,3)#pos 0 is bundle, pos 1 is revenue, pos 2 are Agents 
         ag_list = []
         for agent_it in self.agents_bid_list:
             while(len(combo_dict[agent_it][combo_size][0]) != 0 ):
                 for bundle in combo_dict[agent_it][combo_size][0]:
-                    revenue_ele[0]=bundle
                     for agent_bidder in combo_dict[agent_it][combo_size][1][x]:
                         ag_list.append(agent_bidder)
-                    revenue_ele[2]= ag_list
-                    revenue_ele[1] = self.get_revenue_for_agent_list(ag_list)
+
                     x+=1
-                    rev_vector.append(revenue_ele)
+                    rev_vector.append((bundle,self.get_revenue_for_agent_list(ag_list),ag_list))
                     ag_list = []
 
                 combo_size +=1
