@@ -45,21 +45,38 @@ class Auction():
             self.recv_bid_list("DEBUG","DEBUG",False)#call recv bid function, but ignore values and just start auction if it is not already started!
         else : 
             pass
+    
+    def print_winners_and_loosers(self):
+        win_str = "AUCTION : WINNERS: [ "
+        loosers_str= "LOOSERS: [ "
         
+        for ag in self.winner_list:
+            win_str+="AG-ID "+ str (ag.id) + ", "
         
+        win_str += "]"
         
+        for ag in self.looser_list:
+            loosers_str += " AG-ID " + str(ag.id) + ", "
+        
+        loosers_str += "]"
+            
+        print (win_str + loosers_str)
+            
+            
+            
     def recv_bid_list(self, agent,bid_list,real_bid):
         if (real_bid == True):
             self.bids_recieved += 1 
             #recviece the bids of an agent and safe the bids until we have all bids recieved or Timeout
             self.agents_bid_list[agent] = bid_list# for Every Agent entry in DIct, there is a List of his XOR bids, #[0] is bundle, [1] is bid value
-            #print("AUCTION: Recieved bid "+ str(bid_list[0][0].name) + "from agent" + str(agent.id) + "for price" + str(bid_list[0][1]))
+            #print("AUCTION: Recieved bid "+ str(bid_list[0][0].name) + "from agent" + str(agent.id) + "fscaor price" + str(bid_list[0][1]))
 
         if self.bids_recieved == len(self.agent_list)-self.agents_out:# ADD ENDING CONDITION, maybe self.agent_llist length = 1 or smth
             self.all_bids_recieved = True
             self.print_agents_bid_list()
+            self.print_price_list()
+            input("Iteration["+ str(self.iteration)+"]--------------------AUCTION RECIEVED ALL BIDS, PRESS [ENTER] TO EVALUATE. -----------")
 
-            input("Iteration:"+ str(self.iteration)+"--------------------ALL bids Recieved,Press enter to evaluate... ---------------------------------")
             self.iteration +=1
   
             self.bids_recieved= 0
@@ -67,17 +84,21 @@ class Auction():
             self.calculate_all_possible_distributions()
             
             self.calculate_new_price_list()
-            self.print_price_list()
             self.all_bids_recieved = False
-            input("Iteration:"+ str(self.iteration-1)+"--------------------Press Enter to Notify Agents ---------------------------------")
-      
+            #input("Iteration:"+ str(self.iteration-1)+"--------------------Press Enter to Notify Agents ---------------------------------")
+            
+            self.print_winners_and_loosers()
+            print("END OF ITERATION [" + str(self.iteration-1)+"]--------------------------------------------------------")
+            input("START OF ITERATION[" + str(self.iteration)+"]-----PRESS [ENTER] TO NOTIFY AGENTS--------------------------------")
+            
+            print()
             self.notify_loosers()
             self.notify_winners()
            
             
     def calculate_new_price_list(self):#copy Old list, increase the price for each Bundle by epsilon
         for agent in self.looser_list:
-            print("Auction: increasing Price for bundle [: "+self.agents_bid_list[agent][0][0].name+ "] by " + str(self.epsilon))
+            print("Auction: increasing Price for bundle : [ "+self.agents_bid_list[agent][0][0].name+ "] by " + str(self.epsilon)+" so it costs now " + str (self.price_list[self.agents_bid_list[agent][0][0]] +1))
             self.price_list[self.agents_bid_list[agent][0][0]] +=self.epsilon# the bundle, the agent wanted to win
         #self.print_price_list()
         
@@ -111,13 +132,14 @@ class Auction():
         return_list = [] # A LIST WITH MERGED COMPATIBLE BUNDLES OF SIZE N+1
         for agent_it in self.agents_bid_list:
         #    print("Try to match with bundle " + str (self.agents_bid_list[agent_it][0][0].name))    
-            if self.compatible(bundle, self.agents_bid_list[agent_it][0][0]):
+            if bundle.compatible(self.agents_bid_list[agent_it][0][0]):
         #        print("was compatible!")
                 combo_list.append((self.agents_bid_list[agent_it][0][0],[agent_it]))
         
         if combo_list != []: #only create new bundles if we found compatible stuff
             for combo in combo_list :
                 new_b= bundle.merge_with_bundle(combo[0])
+                #print("New Combo" + str (new_b.name))
                 
                 return_list.append((new_b,bundle_agents+combo[1]))# we Append tupels (bundles|Agents belonging to bundle)
         #        print("merged new bundle" + str(new_b.name))
@@ -149,7 +171,6 @@ class Auction():
 
             while (len(combination_dict[agent_it][combo_size][0]) != 0):# TODO, stop if no more new combos, for agent_IT
                 #print("Calculating Combos for Input Size : " + str(combo_size +1))
-                bid = self.agents_bid_list[agent_it][0][1]
                 overall_combo_count+=1
                 for bundle in combination_dict[agent_it][combo_size][0]:
                     #print("Searching Combos for : AG-ID-"+ str(agent_it.id) + "and Bundle [" +str(bundle.name)+ "]")
@@ -166,25 +187,25 @@ class Auction():
                 x=0
             combo_size = 0
             
-        print("AUCTION: DONE COMPUTING ALL COMBINATIONS! Amount of Combos found: " + str(overall_combo_count))
-        self.print_combo_dict(combination_dict)
-        print("startung to Calculate Prices for All combos..")
+        #print("AUCTION: DONE COMPUTING ALL COMBINATIONS! Amount of Combos found: " + str(overall_combo_count))
+        #self.print_combo_dict(combination_dict)
+        #print("startung to Calculate Prices for All combos..")
         revenue_vector = self.calculate_revenue_vector(combination_dict)      
         max_rev = self.find_biggest_revenue_in_revenue_vector(revenue_vector)
         
         self.set_looser_list(max_rev)
         self.set_winner_list(max_rev)
         
-        print("biggest Rev from: AG" + self.print_max_rev(max_rev))
-        print(self.print_revenue_vecotr(revenue_vector))
+        print("Auction: biggest Revenue from: AG " + self.print_max_rev(max_rev))
+        #print(self.print_revenue_vecotr(revenue_vector))
         
         
  
     def print_max_rev(self,max_rev):
-        print_str = "Bundle ["+ str(max_rev[0].name)+ "] for Revenue : " + str(max_rev[1]) +"and Agents ID "
+        print_str = "Bundle ["+ str(max_rev[0].name)+ "] for Revenue ( " + str(max_rev[1]) +" )$ and Agents ID "
         
         for agent in max_rev[2]:
-            print_str += str(agent.id) + "and"
+            print_str += str(agent.id) + " and "
         return print_str 
  
     def print_revenue_vecotr(self,revenue_vector):
@@ -222,9 +243,12 @@ class Auction():
     
     
     def find_biggest_revenue_in_revenue_vector(self,rev_vector):#check all combinations, return the one with biggest rev
-        max_rev= [0,-(math.inf),0]
+        max_rev= [0,-(math.inf),0]#tripel [0] = Bundle  , tripel[1] revenue, tripel [2] Agents
         
         for tripel in rev_vector:
+            #print("Checking : " + str(tripel[0].name) + " and rev" + str(tripel[1] ))
+            #for agent in tripel[2]:
+            #    print("and Agent " + str (agent.id))
             if tripel[1]>= max_rev[1] :
                 max_rev = tripel
         
@@ -237,7 +261,7 @@ class Auction():
         rev_sum = 0
         
         for ag in ag_list :
-            rev_sum += self.price_list[self.agents_bid_list[ag][0][0]]
+            rev_sum += self.agents_bid_list[ag][0][1]
         return rev_sum
 
                     
@@ -332,15 +356,19 @@ class Auction():
 
        
     def notify_winners(self):#notify all agents, wo who the round
-        for agent in self.winner_list:
+            notify_winnerlist = copy.copy(self.winner_list)
+            self.winner_list = []
+            for agent in notify_winnerlist:
             #print("Auction: Notifying Winner Agent ID   "+ str(element[0].id) +  " For Bundle " + element[1].name)
-            agent.recv_win_notification(self.price_list,self.agents_bid_list[agent][0][0],self)
+                agent.recv_win_notification(self.price_list,self.agents_bid_list[agent][0][0],self)
         
         
         
 
     def notify_loosers(self):#notify all agents who lost the round
-        for agent in self.looser_list:
+        notify_looserlist = copy.copy(self.looser_list)
+        self.looser_list = []
+        for agent in notify_looserlist:
             #print("Auction: Notifying Looser Agent ID :   "+ str(element[0].id) + " for Bundle " +  element[1].name )
             agent.recv_loss_notification(self.price_list,self.agents_bid_list[agent][0][0],self)
         
@@ -368,11 +396,11 @@ class Auction():
     def print_price_list(self):
         print_str= "Auction: Prices: "
         for bundle in self.price_list:
-            print_str += ">>>B[ " + bundle.name + " ] P: " + str(self.price_list[bundle])+"<<<|"
+            print_str += "[ " + bundle.name + " ] P: " + str(self.price_list[bundle])+"|"
         print(print_str)
         
     def print_agents_bid_list(self):
-        print_str="AUCTION RECIEVED BIDS:"
+        print_str="Auction: Recieved bids: "
         for agent_it in self.agents_bid_list:
-            print_str+=">AG-ID " + str(agent_it.id) + "Bid " +str(self.agents_bid_list[agent_it][0][1]) +" for B["+str(self.agents_bid_list[agent_it][0][0].name)+"]<|"
+            print_str+="AG-ID " + str(agent_it.id) + "Bid (" +str(self.agents_bid_list[agent_it][0][1]) +") for B["+str(self.agents_bid_list[agent_it][0][0].name)+"]|"
         print (print_str)            
