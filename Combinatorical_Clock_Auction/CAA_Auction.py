@@ -36,9 +36,9 @@ class Auction():
     def sealed_bid_phase(self):
         agents_bid_dict = {}
         print("Sealed Bid Phase: ")
-        self.agents_done = 2
+        self.agents_done = 0
         for agent in self.agent_list:
-            pass #agent.final_bids(self)
+            agent.final_bids(self)
         while self.agents_done != len(self.agent_list):
             print("LOOOL NOT DONE YET")
         for agent in self.agent_list:
@@ -70,7 +70,7 @@ class Auction():
                                         if c != a and c != b:
                                             for cbundle in c.own_prices:
                                                 if abundle.compatible(cbundle) and bbundle.compatible(cbundle):
-                                                    sum = a.own_prices[abundle] + b.own_prices[bbundle] + b.own_prices[cbundle] - 3
+                                                    sum = a.own_prices[abundle] + b.own_prices[bbundle] + c.own_prices[cbundle] - 3
                                                     if sum > best_sum:
                                                         combos.append(([abundle, a, bbundle, b, cbundle, c], sum))
                                                         best_sum = sum
@@ -88,7 +88,7 @@ class Auction():
             bundle_winner[combos[-1][0][4]] = combos[-1][0][5]
             for b in bundle_winner:
                 print("Agent " + str(bundle_winner[b].id) +  " won bundle " + b.name + " with price " +  str(bundle_winner[b].own_prices[b] - 1) )
-            print("summed cost: " + combos[-1][1])
+            print("summed cost: " + str(combos[-1][1]))
 
     def start_clock_phase(self):
         self.done = False
@@ -98,7 +98,7 @@ class Auction():
             self.advertise_bundles()  # start by sending all agent pricelist
             while self.agents_done != len(self.agent_list):
                 print("LOOOL NOT DONE YET")
-            self.print_agent_prices()
+            #self.print_agent_prices()
             self.iteration += 1
             if self.increase_prices():
                 self.done = True
@@ -114,7 +114,7 @@ class Auction():
             agent.print_bids()
 
     def increase_prices(self):
-        if Bid.instances == []: #no price increase, Gleichgewicht
+        if Bid.instances == [] or len(Bid.instances) == 1: #no price increase, Gleichgewicht
             return True
         increase = {}
         for bundle in self.bundle_list:

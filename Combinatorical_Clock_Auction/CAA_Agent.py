@@ -117,8 +117,10 @@ class Agent():
         for e in range (self.eligibility):
             sorted_uses = sorted(self.use_vector.items(), key=lambda x: x[1], reverse=True)  # usevektor absteigend nach use sortieren
             self.print_sorted_uses(sorted_uses)
+            #print(sorted_uses)
             if len(sorted_uses) < 1:
                 self.location = self.start_location
+                self.bid_type = ""
                 return
             best_bundle = sorted_uses[0][0]
             #print("Best bundle: " + str(best_bundle))
@@ -167,8 +169,8 @@ class Agent():
 
     def print_sorted_uses(self, uses):
         ret = ""
-        for use in uses:
-            ret += str(use[0]) + ", USE: " + str(use[1]) + "\n"
+        for i in range (len(uses)):
+            ret += str(uses[i][0]) + ", USE: " + str(uses[i][1])
             return print(ret)
     def print_use_vector(self):
         print_string =""

@@ -138,18 +138,21 @@ def exists2(job1, job2, job3):
 # initialize all objects
 def init_world():
 
-    init_güter((2,2), 5, "Cat", 2)
-    init_güter((3,3), 5, "Cat", 2)
-    init_güter((0,4), 3, "Dog", 1)
+    init_güter((2,2), 5, "Bla", 2)
+    init_güter((3,4), 5, "Cat", 2)
+    init_güter((0, 3), 5, "Dog", 2)
+    init_güter((3,3), 4, "Dog", 1)
+    init_güter((2, 1), 7, "Bla", 1)
+    init_güter((1, 3), 4, "Ta", 2)
     init_bundles()
 
     for bundle in Bundle.instances:
         print(bundle)
     print("len bundle instances: " + str(len(Bundle.instances)))
     # location, Capacity
-    agent_1 = Agent((0, 0), 3, 3)
-    agent_2 = Agent((5, 5), 3, 3)
-    agent_3 = Agent((4, 5), 3, 3)
+    agent_1 = Agent((0, 0), 4, 3)
+    agent_2 = Agent((5,5), 4, 3)
+    agent_3 = Agent((0, 1), 4, 3)
 
     # job Location, Value,
     # gut_0 = Job((2, 2), 15, "Cat", "gut_0")
@@ -171,7 +174,7 @@ def init_world():
 
     #bundle_list = [bundle_0, bundle_1, bundle_2, bundle_3, bundle_4, bundle_5, bundle_6, bundle_7]
     bundle_list = Bundle.instances
-    agent_list = [agent_1, agent_2]
+    agent_list = [agent_1, agent_2, agent_3]
     auction = Auction(bundle_list, agent_list, 1)
     auction.start_auction()
 
